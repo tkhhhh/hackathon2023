@@ -1,10 +1,10 @@
 import datetime
-from server.api_service.load_api import LoadApi
+from api_service.load_api import LoadApi
 
 class Transaction(object):
 
-    def __init__(self, account_id):
-        self.load_api = LoadApi()
+    def __init__(self, authJWT, account_id):
+        self.load_api = LoadApi(authJWT)
         self.account_id = account_id
 
     def get_recent_transaction(self, day, amount):
@@ -19,4 +19,3 @@ class Transaction(object):
                 Transactions.append(transaction)
         result["Transactions"] = Transactions
         return result
-
