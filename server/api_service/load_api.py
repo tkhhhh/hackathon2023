@@ -5,8 +5,7 @@ import json
 
 class LoadApi(object):
 
-    def __init__(self):
-        authJWT = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE2NjI0MjI0MDAsImFwaV9zdWIiOiJjNzgzNTAzODJlNDc3YTMyNmYwMjQ5Mzg1M2NhMmI5NzNiYjA0OGZjYTFkZmJjMWZlMDg0NTNkNTg2NWVmNjcwMTY3NTEyMzIwMDAwMCIsInBsYyI6IjVkY2VjNzRhZTk3NzAxMGUwM2FkNjQ5NSIsImV4cCI6MTY3NTEyMzIwMCwiZGV2ZWxvcGVyX2lkIjoiYzc4MzUwMzgyZTQ3N2EzMjZmMDI0OTM4NTNjYTJiOTczYmIwNDhmY2ExZGZiYzFmZTA4NDUzZDU4NjVlZjY3MCJ9.ZqiS7hmgZ6yfCp4PNdt9vpnq4NqgyOX6MT9ZMNOsezr1-s9Enz9hugQewlEcSxBpoAfeSEupTU96_NLhlWcHGxI1_TNcTwlnwHOk9gpjju7pKlc2JyUhJg9wE2nve1Tr5SYJVCKtGChxrkZLcoEqHqSLirqvByetcAVDjbIWWDb-E-5ETvMZDzicN0gDxyA6bDwEFtBALbFAKJe1hEinCcc6N_2BYLDYKWO0KXPPlXylsMvoESg_IOkZwiIH8_gniqUXiSlHwdZGgsAbhMPKPKTh4EKXwpLqcmekB1oyyWRYHpFiWtmrSk_wK_UDt1eQ-KFbEhLEbP4Mz69ZxTwKAQ"
+    def __init__(self, authJWT):
         self.headers = {
             'Authorization': f'Bearer {authJWT}',
             'Content-Type': 'application/json',
@@ -31,5 +30,9 @@ class LoadApi(object):
 
 
 if __name__ == '__main__':
-    load = LoadApi()
+    from dotenv import load_dotenv
+    load_dotenv()
+    authJWT = os.environ['AUTH_JWT']
+
+    load = LoadApi(authJWT)
     load.get_user_all_transaction("73680920")

@@ -1,6 +1,11 @@
-from flask import Flask
-from flask import request, jsonify
-from server.function_area.transaction import Transaction
+import os
+from flask import Flask, request, jsonify
+from function_area.transaction import Transaction
+from dotenv import load_dotenv
+
+load_dotenv()
+ # take environment variables from .env.
+authJWT = os.environ['AUTH_JWT']
 
 app = Flask(__name__)
 
@@ -15,6 +20,5 @@ def get_recent_transactions():
     account_id = content["accountID"]
     day = content["day"]
     amount = content["amount"]
-    trans = Transaction(account_id)
+    trans = Transaction(authJWT, account_id)
     return jsonify(trans.get_recent_transaction(day, amount))
-
