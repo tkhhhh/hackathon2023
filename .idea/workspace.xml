@@ -3,17 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3f305bab-f089-4bdb-8c4b-3cab9fd085e5" name="Changes" comment="add some functions for analyse words">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/app.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/app.module.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/api/pie_chart.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/pie_chart.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/api_service/load_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/api_service/load_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -184,7 +174,7 @@
       <workItem from="1667655703891" duration="178000" />
       <workItem from="1667655907789" duration="39586000" />
       <workItem from="1667704509572" duration="1692000" />
-      <workItem from="1667706214858" duration="14424000" />
+      <workItem from="1667706214858" duration="16340000" />
     </task>
     <task id="LOCAL-00001" summary="add -file">
       <created>1667673859491</created>
@@ -207,7 +197,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667708291647</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add some functions for analyse words">
+      <created>1667733597926</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1667733597926</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
