@@ -1,0 +1,52 @@
+<div nz-row style="width:95%;">
+  <div nz-col nzSpan="24">
+    <textarea rows="7" nz-input [disabled]="true" [(ngModel)]="inputValue"></textarea>
+  </div>
+  <br/>
+  <div nz-col nzSpan="24">
+    <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton">
+      <input type="text" nz-input placeholder="input search text"  [(ngModel)]="typeValue"/>
+    </nz-input-group>
+    <ng-template #suffixButton>
+      <button nz-button nzType="primary" nzSize="large" nzSearch (click)="typeChange()">send</button>
+    </ng-template>
+  </div>
+</div>
+<br/>
+<div nz-row>
+  <div nz-col nzSpan="12">
+      <nz-table [nzLoading]="isSpinning" [nzPageSize]="20" [nzScroll]="{ y: '200px' }" style="width:95%;">
+      <thead>
+        <tr>
+          <th>merchant</th>
+          <th>amount</th>
+          <th>timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of listOfData">
+          <td>{{ data.merchant }}</td>
+          <td>{{ data.amount }}</td>
+          <td>{{ data.timestamp }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+  <div nz-col nzSpan="12">
+    <nz-card style="width:95%;" nzTitle="Personal Detail" [nzExtra]="extraTemplate">
+      <p>Card content</p>
+      <p>Card content</p>
+      <p>Card content</p>
+    </nz-card>
+    <ng-template #extraTemplate>
+      <a>More</a>
+    </ng-template>
+  </div>
+</div>
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="purpose" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+      <ng-container *nzModalContent>
+        <p>Content one</p>
+        <p>Content two</p>
+        <p>Content three</p>
+      </ng-container>
+</nz-modal>

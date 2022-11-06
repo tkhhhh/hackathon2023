@@ -3,8 +3,8 @@ from server.api_service.load_api import LoadApi
 
 class Transaction(object):
 
-    def __init__(self, account_id):
-        self.load_api = LoadApi()
+    def __init__(self, account_id, authJWT):
+        self.load_api = LoadApi(authJWT)
         self.account_id = account_id
 
     def get_recent_transaction(self, day, amount):
@@ -13,7 +13,7 @@ class Transaction(object):
         Transactions = []
         for transaction in json_response["Transactions"]:
             # 2022-10-26 02:34:18
-            timestamp = datetime.datetime.strptime(transaction["timestamp"], "%Y-%M-%D %HH:%mm:%ss")
+            timestamp = datetime.datetime.strptime(transaction["timestamp"], "%Y-%m-%d %H:%M:%S")
             now_timestamp = datetime.datetime.now()
             if (now_timestamp - timestamp).days < day and len(Transactions) < amount:
                 Transactions.append(transaction)
