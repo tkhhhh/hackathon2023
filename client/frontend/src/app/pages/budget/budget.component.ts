@@ -68,9 +68,6 @@ export class BudgetComponent implements OnInit {
   download(): void {
     this.http.post<any>("/api/report/send", {accountID: this.accountID, email: this.email}, {responseType: "blob" as "json"}).subscribe(data => {
           this.createBasicNotification()
-          const blob = new Blob([data], { type: 'application/pdf' });
-          const url= window.URL.createObjectURL(blob);
-          window.open(url);
     })
   }
 
