@@ -18,8 +18,16 @@ class LoadApi(object):
             "https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/create",
             headers=self.headers,
             data=payload).text
+        print(response)
         json_response = json.loads(response)
-        print(json_response)
+        return json_response
+
+    def get_account_details(self, account_id):
+        response = requests.get(
+            f"https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/{account_id}",
+            headers=self.headers).text
+        json_response = json.loads(response)
+        return json_response
 
     def get_user_all_transaction(self, account_id):
         response = requests.get(
