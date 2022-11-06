@@ -1,4 +1,4 @@
-from server.api_service.load_api import LoadApi
+from api_service.load_api import LoadApi
 
 def create_pie_chart_data(auth_JWT, account_id):
     api = LoadApi(auth_JWT)
