@@ -62,5 +62,11 @@ def pie_chart():
     account_id = content["accountID"]
     return json.dumps(create_pie_chart_data(authJWT, account_id))
 
+@app.route("/api/report/pie", methods=["POST"])
+def pie_report():
+    content = request.json
+    account_id = content["accountID"]
+    return json.dumps(generate_pie_chart(authJWT, account_id))
+
 if __name__ == "__main__":
     app.run(debug=True)
