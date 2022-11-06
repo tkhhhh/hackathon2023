@@ -35,8 +35,3 @@ class LoadApi(object):
             headers=self.headers, params={}).text
         json_response = json.loads(response)
         return json_response
-
-
-if __name__ == '__main__':
-    load = LoadApi()
-    load.get_user_all_transaction("73680920")

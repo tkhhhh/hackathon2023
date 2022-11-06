@@ -1,6 +1,16 @@
-<div nz-row>
-
+<nz-spin [nzSpinning]="isLoading">
+  <div nz-row>
+  <div nz-col nzSpan="24">
+    <div echarts [options]="option">
+    </div>
+  </div>
 </div>
+<button nz-button nzType="primary" nzSize="large" nzShape="round" (click)="download()">
+      <span nz-icon nzType="download"></span>
+      Download
+</button>
+</nz-spin>
+
 <div nz-row>
 
 </div>

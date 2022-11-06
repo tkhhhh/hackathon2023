@@ -1,18 +1,22 @@
-def create_pie_chart_data(transactions):
-    total = 0
+from server.api_service.load_api import LoadApi
+
+def create_pie_chart_data(auth_JWT, account_id):
+    api = LoadApi(auth_JWT)
+    transactions = api.get_user_all_transaction(account_id)["Transactions"]
+    # total = 0
     categories = {
 
     }
     for t in transactions:
         category = t["merchant"]["category"]
-        if (category in categories.keys):
-            categories[category] += 1
+        if (category in categories.keys()):
+            categories[category] += t["amount"]
         else:
-            categories[category] = 1
-        total += 1
+            categories[category] = t["amount"]
+        ##total += 1
 
-    for (k,v) in categories.entries:
-        categories[k] = v/total
+    # for (k,v) in categories.entries:
+    #    categories[k] = v/total
 
     return categories
 
