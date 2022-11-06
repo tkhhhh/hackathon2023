@@ -3,9 +3,9 @@ from flask import Flask, request
 from flask.cli import load_dotenv
 from api import accounts, sms
 
-from server.function_area.transaction import Transaction
-from server.text_format.format_text_to_function import TextFormat
-from server.api.pie_chart import *
+from function_area.transaction import Transaction
+from text_format.format_text_to_function import TextFormat
+from api.pie_chart import *
 from function_area.transaction import Transaction
 from function_area.account import Account
 from text_format.format_text_to_function import TextFormat
@@ -61,6 +61,21 @@ def pie_chart():
     content = request.json
     account_id = content["accountID"]
     return json.dumps(create_pie_chart_data(authJWT, account_id))
+
+
+@app.route("/api/report", methods=["POST"])
+def report():
+    content = request.json
+    account_id = content["accountID"]
+    return send_file(Report(account_id, authJWT).create_report())
+
+@app.route("/api/report/send", methods=["POST"])
+def send_report():
+    content = request.json
+    account_id = content["accountID"]
+    email = content["email"]
+    print(email)
+    return None #TODO
 
 @app.route("/api/report/pie", methods=["POST"])
 def pie_report():

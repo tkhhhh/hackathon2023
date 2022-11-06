@@ -1,4 +1,4 @@
-from server.api_service.load_api import LoadApi
+from api_service.load_api import LoadApi
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
