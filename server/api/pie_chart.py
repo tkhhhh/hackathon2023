@@ -1,6 +1,16 @@
 from api_service.load_api import LoadApi
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
 from matplotlib.backends.backend_pdf import PdfPages
+
+from server.api_service.load_api import LoadApi
+import os
+import pandas as pd
+
+from matplotlib import rcParams, pyplot as plt
+
+rcParams['axes.spines.top'] = False
+rcParams['axes.spines.right'] = False
 
 def create_pie_chart_data(auth_JWT, account_id):
     api = LoadApi(auth_JWT)
@@ -22,20 +32,33 @@ def create_pie_chart_data(auth_JWT, account_id):
 
     return categories
 
-def generate_pie_chart(auth_JWT, account_id):
-    categories = create_pie_chart_data(auth_JWT, account_id)
-    pp = PdfPages('long.pdf')
-    fig = plt.figure(3, figsize=(4, 4))
-    ax = plt.axes([0.1, 0.1, 0.8, 0.8])
-    for x in categories.keys():
-        ax.cla()
-        labels = x
-        fracs = categories[x]
-        p = plt.pie(fracs, labels=labels)
-        fig.savefig(pp, format='pdf')
+def generate_sales_data(auth_JWT, account_id):
+    api = LoadApi(auth_JWT)
+    transactions = api.get_user_all_transaction(account_id)["Transactions"]
+
+    result = {}
+    for transaction in transactions:
+        for item in transaction.keys():
+            if item not in result.keys():
+                result[item] = []
+            if item == "merchant":
+                result[item].append(transaction[item]['name'])
+            else:
+                result[item].append(transaction[item])
+
+    df = pd.DataFrame(result)
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+    ax.axis('tight')
+    ax.axis('off')
+    the_table = ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+    # the_table.auto_set_font_size(False)
+    # the_table.set_fontsize(2)
+
+    pp = PdfPages("foo.pdf")
+    pp.savefig(fig, bbox_inches='tight')
     pp.close()
-    return {}
-    
+
     # {
     #         "transactionUUID": "0673bca4-fbb2-46bd-aa76-36243305ceed",
     #         "accountUUID": "72965642",
@@ -58,3 +81,7 @@ def generate_pie_chart(auth_JWT, account_id):
     #         "message": "Weekly groceries shopping",
     #         "pointOfSale": "Online"
     #     },
+
+load_dotenv()  # take environment variables from .env.
+authJWT = os.environ['AUTH_JWT']
+generate_sales_data(authJWT, "73680920")

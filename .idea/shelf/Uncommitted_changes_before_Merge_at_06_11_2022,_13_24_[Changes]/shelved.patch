@@ -1,0 +1,243 @@
+Index: server/app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os, json\nfrom flask import Flask, request\nfrom flask.cli import load_dotenv\nfrom api import accounts, sms\n\nfrom server.function_area.transaction import Transaction\nfrom server.text_format.format_text_to_function import TextFormat\nfrom server.api.pie_chart import *\nfrom function_area.transaction import Transaction\nfrom function_area.account import Account\nfrom text_format.format_text_to_function import TextFormat\nfrom flask_sock import Sock\n\n\nload_dotenv()  # take environment variables from .env.\nauthJWT = os.environ['AUTH_JWT']\n#twilio_phone_no = os.environ['TWILIO_PHONE_NO']\n#twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']\n#twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']\n\napp = Flask(__name__)\nsock = Sock(app)\n@app.route(\"/\")\ndef hello_world():\n    return \"<p>Hello, World!</p>\"\n\n@app.route(\"/test/accounts/create\")\ndef create_account():\n    account_data = accounts.create_account(authJWT)\n    return f\"{account_data}\"\n\n#@app.route(\"/test/sms/<phone_no>\")\n#def send_sms(phone_no):\n#    sms.send_sms(twilio_account_sid, twilio_auth_token, twilio_phone_no, phone_no)\n\n@app.route(\"/api/transaction/recently\", methods=[\"POST\"])\ndef get_recent_transactions():\n    content = request.json\n    account_id = content[\"accountID\"]\n    day = content[\"day\"]\n    amount = content[\"amount\"]\n    trans = Transaction(account_id, authJWT)\n    return json.dumps(trans.get_recent_transaction(day, amount))\n\n@app.route(\"/api/account/details\", methods=[\"POST\"])\ndef get_account():\n    content = request.json\n    account_id = content[\"accountID\"]\n    account = Account(account_id, authJWT)\n    account_data = account.get_account_details(authJWT, account_id)\n    return json.dumps(account_data)\n\n@app.route(\"/api/robot\", methods=[\"POST\"])\ndef robot():\n    content = request.json\n    text = TextFormat(content)\n    return json.dumps(text.analyse_purpose())\n\n@app.route(\"/api/pie/chart\", methods=[\"POST\"])\ndef pie_chart():\n    content = request.json\n    account_id = content[\"accountID\"]\n    return json.dumps(create_pie_chart_data(authJWT, account_id))\n\n@app.route(\"/api/report/pie\", methods=[\"POST\"])\ndef pie_report():\n    content = request.json\n    account_id = content[\"accountID\"]\n    return json.dumps(generate_pie_chart(authJWT, account_id))\n\nif __name__ == \"__main__\":\n    app.run(debug=True)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/app.py b/server/app.py
+--- a/server/app.py	(revision 16869e96ad2981e0e7cdc254d139f209fb9c124a)
++++ b/server/app.py	(date 1667741080260)
+@@ -10,6 +10,7 @@
+ from function_area.account import Account
+ from text_format.format_text_to_function import TextFormat
+ from flask_sock import Sock
++from api.send_email import *
+ 
+ 
+ load_dotenv()  # take environment variables from .env.
+@@ -66,7 +67,15 @@
+ def pie_report():
+     content = request.json
+     account_id = content["accountID"]
+-    return json.dumps(generate_pie_chart(authJWT, account_id))
++    return json.dumps({})
++
++@app.route("/api/report/transactions", methods=["POST"])
++def pie_report():
++    content = request.json
++    account_id = content["accountID"]
++    generate_sales_data(authJWT, account_id)
++    send_mail("626627983@qq.com", "fangxienan666", "bitfffff@163.com", "test", "test")
++    return json.dumps({})
+ 
+ if __name__ == "__main__":
+     app.run(debug=True)
+Index: server/api/pie_chart.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from server.api_service.load_api import LoadApi\nimport matplotlib.pyplot as plt\nfrom matplotlib.backends.backend_pdf import PdfPages\n\ndef create_pie_chart_data(auth_JWT, account_id):\n    api = LoadApi(auth_JWT)\n    transactions = api.get_user_all_transaction(account_id)[\"Transactions\"]\n    # total = 0\n    categories = {\n\n    }\n    for t in transactions:\n        category = t[\"merchant\"][\"category\"]\n        if (category in categories.keys()):\n            categories[category] += t[\"amount\"]\n        else:\n            categories[category] = t[\"amount\"]\n        ##total += 1\n\n    # for (k,v) in categories.entries:\n    #    categories[k] = v/total\n\n    return categories\n\ndef generate_pie_chart(auth_JWT, account_id):\n    categories = create_pie_chart_data(auth_JWT, account_id)\n    pp = PdfPages('long.pdf')\n    fig = plt.figure(3, figsize=(4, 4))\n    ax = plt.axes([0.1, 0.1, 0.8, 0.8])\n    for x in categories.keys():\n        ax.cla()\n        labels = x\n        fracs = categories[x]\n        p = plt.pie(fracs, labels=labels)\n        fig.savefig(pp, format='pdf')\n    pp.close()\n    return {}\n    \n    # {\n    #         \"transactionUUID\": \"0673bca4-fbb2-46bd-aa76-36243305ceed\",\n    #         \"accountUUID\": \"72965642\",\n    #         \"merchant\": {\n    #           \"name\": \"Capital Two\",\n    #           \"category\": \"Bills & Utilities\",\n    #           \"description\": \"Credit Card Company\",\n    #           \"pointOfSale\": [\n    #             \"Online\"\n    #           ]\n    #         },\n    #         \"amount\": 843.92,\n    #         \"creditDebitIndicator\": \"Debit\",\n    #         \"currency\": \"GBP\",\n    #         \"timestamp\": \"2019-05-20 10:51:33\",\n    #         \"emoji\": \"\uD83E\uDD11\",\n    #         \"latitude\": -4.38849,\n    #         \"longitude\": 52.33594,\n    #         \"status\": \"Successful\",\n    #         \"message\": \"Weekly groceries shopping\",\n    #         \"pointOfSale\": \"Online\"\n    #     },\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/api/pie_chart.py b/server/api/pie_chart.py
+--- a/server/api/pie_chart.py	(revision c4c24f47b7804c63a77f03c000ff0ad10cc64145)
++++ b/server/api/pie_chart.py	(date 1667739671551)
+@@ -1,7 +1,15 @@
+-from server.api_service.load_api import LoadApi
+-import matplotlib.pyplot as plt
++from dotenv import load_dotenv
+ from matplotlib.backends.backend_pdf import PdfPages
+ 
++from server.api_service.load_api import LoadApi
++import os
++import pandas as pd
++
++from matplotlib import rcParams, pyplot as plt
++
++rcParams['axes.spines.top'] = False
++rcParams['axes.spines.right'] = False
++
+ def create_pie_chart_data(auth_JWT, account_id):
+     api = LoadApi(auth_JWT)
+     transactions = api.get_user_all_transaction(account_id)["Transactions"]
+@@ -22,20 +30,33 @@
+ 
+     return categories
+ 
+-def generate_pie_chart(auth_JWT, account_id):
+-    categories = create_pie_chart_data(auth_JWT, account_id)
+-    pp = PdfPages('long.pdf')
+-    fig = plt.figure(3, figsize=(4, 4))
+-    ax = plt.axes([0.1, 0.1, 0.8, 0.8])
+-    for x in categories.keys():
+-        ax.cla()
+-        labels = x
+-        fracs = categories[x]
+-        p = plt.pie(fracs, labels=labels)
+-        fig.savefig(pp, format='pdf')
++def generate_sales_data(auth_JWT, account_id):
++    api = LoadApi(auth_JWT)
++    transactions = api.get_user_all_transaction(account_id)["Transactions"]
++
++    result = {}
++    for transaction in transactions:
++        for item in transaction.keys():
++            if item not in result.keys():
++                result[item] = []
++            if item == "merchant":
++                result[item].append(transaction[item]['name'])
++            else:
++                result[item].append(transaction[item])
++
++    df = pd.DataFrame(result)
++
++    fig, ax = plt.subplots(figsize=(12, 4))
++    ax.axis('tight')
++    ax.axis('off')
++    the_table = ax.table(cellText=df.values, colLabels=df.columns, loc='center')
++    # the_table.auto_set_font_size(False)
++    # the_table.set_fontsize(2)
++
++    pp = PdfPages("foo.pdf")
++    pp.savefig(fig, bbox_inches='tight')
+     pp.close()
+-    return {}
+-    
++
+     # {
+     #         "transactionUUID": "0673bca4-fbb2-46bd-aa76-36243305ceed",
+     #         "accountUUID": "72965642",
+@@ -58,3 +79,7 @@
+     #         "message": "Weekly groceries shopping",
+     #         "pointOfSale": "Online"
+     #     },
++
++load_dotenv()  # take environment variables from .env.
++authJWT = os.environ['AUTH_JWT']
++generate_sales_data(authJWT, "73680920")
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"3f305bab-f089-4bdb-8c4b-3cab9fd085e5\" name=\"Changes\" comment=\"add some functions for analyse words\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/api/pie_chart.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/api/pie_chart.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/app.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/app.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\n    <envs>\n      <env key=\"FLASK_APP\" value=\"app\" />\n    </envs>\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\n    <option name=\"myEnvs\">\n      <map>\n        <entry key=\"FLASK_APP\" value=\"app\" />\n      </map>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2H84WAO0GBdp3kUjzSCAztrW5Ss\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/Users/tonysken/PycharmProjects/hackathon2023&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,\n    &quot;ts.external.directory.path&quot;: &quot;/Users/tonysken/PycharmProjects/hackathon2023/client/frontend/node_modules/typescript/lib&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Python.app\">\n    <configuration name=\"Websocket\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/websocket\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/websocket/Websocket.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"app\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/app.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"load_api\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/api_service\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/api_service/load_api.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"load_api_create_account\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/transaction\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/transaction/load_api_create_account.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.app\" />\n        <item itemvalue=\"Python.load_api\" />\n        <item itemvalue=\"Python.Websocket\" />\n        <item itemvalue=\"Python.load_api_create_account\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"3f305bab-f089-4bdb-8c4b-3cab9fd085e5\" name=\"Changes\" comment=\"\" />\n      <created>1667653406063</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1667653406063</updated>\n      <workItem from=\"1667653422421\" duration=\"41000\" />\n      <workItem from=\"1667653635614\" duration=\"2015000\" />\n      <workItem from=\"1667655703891\" duration=\"178000\" />\n      <workItem from=\"1667655907789\" duration=\"39586000\" />\n      <workItem from=\"1667704509572\" duration=\"1692000\" />\n      <workItem from=\"1667706214858\" duration=\"16340000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"add -file\">\n      <created>1667673859491</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667673859491</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"add frontend\">\n      <created>1667674706911</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667674706915</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"add some functions for analyse words\">\n      <created>1667708291647</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667708291647</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"add some functions for analyse words\">\n      <created>1667733597926</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667733597926</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"5\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"add -file\" />\n    <MESSAGE value=\"add frontend\" />\n    <MESSAGE value=\"add some functions for analyse words\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"add some functions for analyse words\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/hackathon2023$Websocket.coverage\" NAME=\"Websocket Coverage Results\" MODIFIED=\"1667662876149\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/websocket\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$app.coverage\" NAME=\"app Coverage Results\" MODIFIED=\"1667731303500\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$load_api.coverage\" NAME=\"load_api Coverage Results\" MODIFIED=\"1667664384951\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/api_service\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$load_api_create_account.coverage\" NAME=\"load_api_create_account Coverage Results\" MODIFIED=\"1667656652461\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/transaction\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision c4c24f47b7804c63a77f03c000ff0ad10cc64145)
++++ b/.idea/workspace.xml	(date 1667740629940)
+@@ -2,6 +2,7 @@
+ <project version="4">
+   <component name="ChangeListManager">
+     <list default="true" id="3f305bab-f089-4bdb-8c4b-3cab9fd085e5" name="Changes" comment="add some functions for analyse words">
++      <change afterPath="$PROJECT_DIR$/server/api/email.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/server/api/pie_chart.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/pie_chart.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/server/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app.py" afterDir="false" />
+@@ -63,7 +64,7 @@
+       <recent name="$PROJECT_DIR$" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="Python.app">
++  <component name="RunManager" selected="Python.send_email">
+     <configuration name="Websocket" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+       <module name="hackathon2023" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+@@ -130,7 +131,7 @@
+       <option name="INPUT_FILE" value="" />
+       <method v="2" />
+     </configuration>
+-    <configuration name="load_api_create_account" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
++    <configuration name="pie_chart" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+       <module name="hackathon2023" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+       <option name="PARENT_ENVS" value="true" />
+@@ -138,12 +139,34 @@
+         <env name="PYTHONUNBUFFERED" value="1" />
+       </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/transaction" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/api" />
+       <option name="IS_MODULE_SDK" value="true" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/server/transaction/load_api_create_account.py" />
++      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/server/api/pie_chart.py" />
++      <option name="PARAMETERS" value="" />
++      <option name="SHOW_COMMAND_LINE" value="false" />
++      <option name="EMULATE_TERMINAL" value="false" />
++      <option name="MODULE_MODE" value="false" />
++      <option name="REDIRECT_INPUT" value="false" />
++      <option name="INPUT_FILE" value="" />
++      <method v="2" />
++    </configuration>
++    <configuration name="send_email" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
++      <module name="hackathon2023" />
++      <option name="INTERPRETER_OPTIONS" value="" />
++      <option name="PARENT_ENVS" value="true" />
++      <envs>
++        <env name="PYTHONUNBUFFERED" value="1" />
++      </envs>
++      <option name="SDK_HOME" value="" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server/api" />
++      <option name="IS_MODULE_SDK" value="true" />
++      <option name="ADD_CONTENT_ROOTS" value="true" />
++      <option name="ADD_SOURCE_ROOTS" value="true" />
++      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
++      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/server/api/send_email.py" />
+       <option name="PARAMETERS" value="" />
+       <option name="SHOW_COMMAND_LINE" value="false" />
+       <option name="EMULATE_TERMINAL" value="false" />
+@@ -154,10 +177,11 @@
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="Python.send_email" />
++        <item itemvalue="Python.pie_chart" />
+         <item itemvalue="Python.app" />
+         <item itemvalue="Python.load_api" />
+         <item itemvalue="Python.Websocket" />
+-        <item itemvalue="Python.load_api_create_account" />
+       </list>
+     </recent_temporary>
+   </component>
+@@ -174,7 +198,7 @@
+       <workItem from="1667655703891" duration="178000" />
+       <workItem from="1667655907789" duration="39586000" />
+       <workItem from="1667704509572" duration="1692000" />
+-      <workItem from="1667706214858" duration="16340000" />
++      <workItem from="1667706214858" duration="21434000" />
+     </task>
+     <task id="LOCAL-00001" summary="add -file">
+       <created>1667673859491</created>
+@@ -204,7 +228,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1667733597926</updated>
+     </task>
+-    <option name="localTasksCounter" value="5" />
++    <task id="LOCAL-00005" summary="add some functions for analyse words">
++      <created>1667735636846</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1667735636846</updated>
++    </task>
++    <option name="localTasksCounter" value="6" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -229,8 +260,10 @@
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+     <SUITE FILE_PATH="coverage/hackathon2023$Websocket.coverage" NAME="Websocket Coverage Results" MODIFIED="1667662876149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/websocket" />
+-    <SUITE FILE_PATH="coverage/hackathon2023$app.coverage" NAME="app Coverage Results" MODIFIED="1667731303500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server" />
++    <SUITE FILE_PATH="coverage/hackathon2023$app.coverage" NAME="app Coverage Results" MODIFIED="1667735792901" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server" />
+     <SUITE FILE_PATH="coverage/hackathon2023$load_api.coverage" NAME="load_api Coverage Results" MODIFIED="1667664384951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/api_service" />
+     <SUITE FILE_PATH="coverage/hackathon2023$load_api_create_account.coverage" NAME="load_api_create_account Coverage Results" MODIFIED="1667656652461" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/transaction" />
++    <SUITE FILE_PATH="coverage/hackathon2023$pie_chart.coverage" NAME="pie_chart Coverage Results" MODIFIED="1667739671567" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/api" />
++    <SUITE FILE_PATH="coverage/hackathon2023$email.coverage" NAME="email Coverage Results" MODIFIED="1667740482163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/api" />
+   </component>
+ </project>
+\ No newline at end of file

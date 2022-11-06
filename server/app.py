@@ -10,6 +10,7 @@ from function_area.transaction import Transaction
 from function_area.account import Account
 from text_format.format_text_to_function import TextFormat
 from flask_sock import Sock
+from api.send_email import *
 
 
 load_dotenv()  # take environment variables from .env.
@@ -81,7 +82,15 @@ def send_report():
 def pie_report():
     content = request.json
     account_id = content["accountID"]
-    return json.dumps(generate_pie_chart(authJWT, account_id))
+    return json.dumps({})
+
+@app.route("/api/report/transactions", methods=["POST"])
+def pie_report():
+    content = request.json
+    account_id = content["accountID"]
+    generate_sales_data(authJWT, account_id)
+    send_mail("626627983@qq.com", "fangxienan666", "bitfffff@163.com", "test", "test")
+    return json.dumps({})
 
 if __name__ == "__main__":
     app.run(debug=True)

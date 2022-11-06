@@ -1,0 +1,1868 @@
+Index: server/api/pie_chart.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>def create_pie_chart_data(transactions):\n    total = 0\n    categories = {\n\n    }\n    for t in transactions:\n        category = t[\"merchant\"][\"category\"]\n        if (category in categories.keys):\n            categories[category] += 1\n        else:\n            categories[category] = 1\n        total += 1\n\n    for (k,v) in categories.entries:\n        categories[k] = v/total\n\n    return categories\n\n    \n    # {\n    #         \"transactionUUID\": \"0673bca4-fbb2-46bd-aa76-36243305ceed\",\n    #         \"accountUUID\": \"72965642\",\n    #         \"merchant\": {\n    #           \"name\": \"Capital Two\",\n    #           \"category\": \"Bills & Utilities\",\n    #           \"description\": \"Credit Card Company\",\n    #           \"pointOfSale\": [\n    #             \"Online\"\n    #           ]\n    #         },\n    #         \"amount\": 843.92,\n    #         \"creditDebitIndicator\": \"Debit\",\n    #         \"currency\": \"GBP\",\n    #         \"timestamp\": \"2019-05-20 10:51:33\",\n    #         \"emoji\": \"\uD83E\uDD11\",\n    #         \"latitude\": -4.38849,\n    #         \"longitude\": 52.33594,\n    #         \"status\": \"Successful\",\n    #         \"message\": \"Weekly groceries shopping\",\n    #         \"pointOfSale\": \"Online\"\n    #     },\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/api/pie_chart.py b/server/api/pie_chart.py
+--- a/server/api/pie_chart.py	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/server/api/pie_chart.py	(date 1667728538945)
+@@ -1,18 +1,22 @@
+-def create_pie_chart_data(transactions):
+-    total = 0
++from server.api_service.load_api import LoadApi
++
++def create_pie_chart_data(auth_JWT, account_id):
++    api = LoadApi(auth_JWT)
++    transactions = api.get_user_all_transaction(account_id)["Transactions"]
++    # total = 0
+     categories = {
+ 
+     }
+     for t in transactions:
+         category = t["merchant"]["category"]
+-        if (category in categories.keys):
+-            categories[category] += 1
++        if (category in categories.keys()):
++            categories[category] += t["amount"]
+         else:
+-            categories[category] = 1
+-        total += 1
++            categories[category] = t["amount"]
++        ##total += 1
+ 
+-    for (k,v) in categories.entries:
+-        categories[k] = v/total
++    # for (k,v) in categories.entries:
++    #    categories[k] = v/total
+ 
+     return categories
+ 
+Index: client/frontend/src/app/app.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><nz-layout class=\"app-layout\">\n  <nz-sider class=\"menu-sidebar\"\n            nzCollapsible\n            nzWidth=\"256px\"\n            nzBreakpoint=\"md\"\n            [(nzCollapsed)]=\"isCollapsed\"\n            [nzTrigger]=\"null\">\n    <div class=\"sidebar-logo\">\n      <a href=\"https://ng.ant.design/\" target=\"_blank\">\n        <img src=\"https://ng.ant.design/assets/img/logo.svg\" alt=\"logo\">\n        <h1>Ant Design Of Angular</h1>\n      </a>\n    </div>\n    <ul nz-menu nzTheme=\"dark\" nzMode=\"inline\" [nzInlineCollapsed]=\"isCollapsed\">\n      <li nz-submenu nzOpen nzTitle=\"Dashboard\" nzIcon=\"dashboard\">\n        <ul>\n          <li nz-menu-item nzMatchRouter>\n            <a routerLink=\"/welcome\">Welcome</a>\n          </li>\n          <li nz-menu-item nzMatchRouter>\n            <a routerLink=\"/budget\">Budget</a>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </nz-sider>\n  <nz-layout>\n    <nz-header>\n      <div class=\"app-header\">\n        <span class=\"header-trigger\" (click)=\"isCollapsed = !isCollapsed\">\n            <span class=\"trigger\"\n               nz-icon\n               [nzType]=\"isCollapsed ? 'menu-unfold' : 'menu-fold'\"\n            ></span>\n        </span>\n      </div>\n    </nz-header>\n    <nz-content>\n      <div class=\"inner-content\">\n        <router-outlet></router-outlet>\n      </div>\n    </nz-content>\n  </nz-layout>\n</nz-layout>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/app.component.html b/client/frontend/src/app/app.component.html
+--- a/client/frontend/src/app/app.component.html	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/app.component.html	(date 1667729408103)
+@@ -8,14 +8,14 @@
+     <div class="sidebar-logo">
+       <a href="https://ng.ant.design/" target="_blank">
+         <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+-        <h1>Ant Design Of Angular</h1>
++        <h1>quick tools</h1>
+       </a>
+     </div>
+     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+       <li nz-submenu nzOpen nzTitle="Dashboard" nzIcon="dashboard">
+         <ul>
+           <li nz-menu-item nzMatchRouter>
+-            <a routerLink="/welcome">Welcome</a>
++            <a routerLink="/welcome">Main</a>
+           </li>
+           <li nz-menu-item nzMatchRouter>
+             <a routerLink="/budget">Budget</a>
+Index: client/frontend/src/app/pages/budget/budget.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><div nz-row>\n\n</div>\n<div nz-row>\n\n</div>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/pages/budget/budget.component.html b/client/frontend/src/app/pages/budget/budget.component.html
+--- a/client/frontend/src/app/pages/budget/budget.component.html	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/pages/budget/budget.component.html	(date 1667726799187)
+@@ -1,5 +1,7 @@
+ <div nz-row>
+-
++  <div nz-col nzSpan="24">
++    <div echarts [options]="option"></div>
++  </div>
+ </div>
+ <div nz-row>
+ 
+Index: client/frontend/src/app/pages/welcome/welcome.component.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><div nz-row style=\"width:95%;\">\n  <div nz-col nzSpan=\"24\">\n    <textarea rows=\"7\" nz-input [disabled]=\"true\" [(ngModel)]=\"inputValue\"></textarea>\n  </div>\n  <br/>\n  <div nz-col nzSpan=\"24\">\n    <nz-input-group nzSearch nzSize=\"large\" [nzAddOnAfter]=\"suffixButton\">\n      <input type=\"text\" nz-input placeholder=\"input search text\"  [(ngModel)]=\"typeValue\"/>\n    </nz-input-group>\n    <ng-template #suffixButton>\n      <button nz-button nzType=\"primary\" nzSize=\"large\" nzSearch (click)=\"typeChange()\">send</button>\n    </ng-template>\n  </div>\n</div>\n<br/>\n<div nz-row>\n  <div nz-col nzSpan=\"12\">\n      <nz-table [nzLoading]=\"isSpinning\" [nzPageSize]=\"20\" [nzScroll]=\"{ y: '200px' }\" style=\"width:95%;\">\n      <thead>\n        <tr>\n          <th>merchant</th>\n          <th>amount</th>\n          <th>timestamp</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr *ngFor=\"let data of listOfData\">\n          <td>{{ data.merchant }}</td>\n          <td>{{ data.amount }}</td>\n          <td>{{ data.timestamp }}</td>\n        </tr>\n      </tbody>\n    </nz-table>\n  </div>\n  <div nz-col nzSpan=\"12\">\n    <nz-card style=\"width:95%;\" nzTitle=\"Personal Detail\" [nzExtra]=\"extraTemplate\">\n      <p>Card content</p>\n      <p>Card content</p>\n      <p>Card content</p>\n    </nz-card>\n    <ng-template #extraTemplate>\n      <a>More</a>\n    </ng-template>\n  </div>\n</div>\n<nz-modal [(nzVisible)]=\"isVisible\" [nzTitle]=\"purpose\" (nzOnCancel)=\"handleCancel()\" (nzOnOk)=\"handleOk()\">\n      <ng-container *nzModalContent>\n        <p>Content one</p>\n        <p>Content two</p>\n        <p>Content three</p>\n      </ng-container>\n</nz-modal>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/pages/welcome/welcome.component.html b/client/frontend/src/app/pages/welcome/welcome.component.html
+--- a/client/frontend/src/app/pages/welcome/welcome.component.html	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/pages/welcome/welcome.component.html	(date 1667730970849)
+@@ -1,9 +1,8 @@
+-<div nz-row style="width:95%;">
+-  <div nz-col nzSpan="24">
++<div nz-row [nzGutter]="[16, 12]" nzJustify="space-around" nzAlign="middle">
++  <div nz-col nzSpan="22">
+     <textarea rows="7" nz-input [disabled]="true" [(ngModel)]="inputValue"></textarea>
+   </div>
+-  <br/>
+-  <div nz-col nzSpan="24">
++  <div nz-col nzSpan="22">
+     <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton">
+       <input type="text" nz-input placeholder="input search text"  [(ngModel)]="typeValue"/>
+     </nz-input-group>
+@@ -13,9 +12,10 @@
+   </div>
+ </div>
+ <br/>
+-<div nz-row>
++<nz-spin [nzSpinning]="isSpinning">
++  <div nz-row>
+   <div nz-col nzSpan="12">
+-      <nz-table [nzLoading]="isSpinning" [nzPageSize]="20" [nzScroll]="{ y: '200px' }" style="width:95%;">
++      <nz-table nzTemplateMode #tableComponent [nzData]="listOfData" [nzPageSize]="20" [nzScroll]="{ y: '200px' }" style="width:95%;">
+       <thead>
+         <tr>
+           <th>merchant</th>
+@@ -24,7 +24,7 @@
+         </tr>
+       </thead>
+       <tbody>
+-        <tr *ngFor="let data of listOfData">
++        <tr *ngFor="let data of tableComponent.nzData">
+           <td>{{ data.merchant }}</td>
+           <td>{{ data.amount }}</td>
+           <td>{{ data.timestamp }}</td>
+@@ -43,6 +43,7 @@
+     </ng-template>
+   </div>
+ </div>
++</nz-spin>
+ <nz-modal [(nzVisible)]="isVisible" [nzTitle]="purpose" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+       <ng-container *nzModalContent>
+         <p>Content one</p>
+Index: client/frontend/src/app/pages/budget/budget.component.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-budget',\n  templateUrl: './budget.component.html',\n  styleUrls: ['./budget.component.scss']\n})\nexport class BudgetComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit(): void {\n  }\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/pages/budget/budget.component.ts b/client/frontend/src/app/pages/budget/budget.component.ts
+--- a/client/frontend/src/app/pages/budget/budget.component.ts	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/pages/budget/budget.component.ts	(date 1667728878892)
+@@ -1,4 +1,6 @@
+ import { Component, OnInit } from '@angular/core';
++import { EChartsOption } from 'echarts';
++import {HttpClient} from "@angular/common/http";
+ 
+ @Component({
+   selector: 'app-budget',
+@@ -7,9 +9,44 @@
+ })
+ export class BudgetComponent implements OnInit {
+ 
+-  constructor() { }
++  option : EChartsOption = {};
++  accountID = "73680920";
++  constructor(private http: HttpClient) { }
+ 
+   ngOnInit(): void {
++    this.http.post<any>('/api/pie/chart', { accountID: this.accountID}).subscribe(data => {
++        this.option = {
++        title: {
++          text: 'Transaction pie chart',
++          subtext: 'from capitalOne',
++          left: 'center'
++        },
++        tooltip: {
++          trigger: 'item'
++        },
++        legend: {
++          orient: 'vertical',
++          left: 'left'
++        },
++        series: [
++          {
++            name: 'Access From',
++            type: 'pie',
++            radius: '50%',
++            data: Object.keys(data).map((x: string | number) => {
++              return { value: Math.abs(data[x]), name: x};
++            }),
++            emphasis: {
++              itemStyle: {
++                shadowBlur: 10,
++                shadowOffsetX: 0,
++                shadowColor: 'rgba(0, 0, 0, 0.5)'
++              }
++            }
++          }
++        ]
++      };
++    })
+   }
+ 
+ }
+Index: server/api_service/load_api.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import datetime\n\nimport requests\nimport json\n\nclass LoadApi(object):\n\n    def __init__(self, authJWT):\n        self.headers = {\n            'Authorization': f'Bearer {authJWT}',\n            'Content-Type': 'application/json',\n            'version': '1.0'\n        }\n\n    def create_random_account(self, quantity, numTransactions, liveBalance):\n        payload = json.dumps({\"quantity\": quantity, \"numTransactions\": numTransactions, \"liveBalance\": liveBalance})\n        response = requests.post(\n            \"https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/create\",\n            headers=self.headers,\n            data=payload).text\n        json_response = json.loads(response)\n        print(json_response)\n\n    def get_user_all_transaction(self, account_id):\n        response = requests.get(\n            f\"https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/transactions/accounts/{account_id}/transactions\",\n            headers=self.headers, params={}).text\n        json_response = json.loads(response)\n        return json_response\n\n\nif __name__ == '__main__':\n    load = LoadApi()\n    load.get_user_all_transaction(\"73680920\")
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/api_service/load_api.py b/server/api_service/load_api.py
+--- a/server/api_service/load_api.py	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/server/api_service/load_api.py	(date 1667708464507)
+@@ -27,8 +27,3 @@
+             headers=self.headers, params={}).text
+         json_response = json.loads(response)
+         return json_response
+-
+-
+-if __name__ == '__main__':
+-    load = LoadApi()
+-    load.get_user_all_transaction("73680920")
+\ No newline at end of file
+Index: client/frontend/src/app/app.module.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\n\nimport { AppRoutingModule } from './app-routing.module';\nimport { AppComponent } from './app.component';\nimport { NZ_I18N } from 'ng-zorro-antd/i18n';\nimport { en_US } from 'ng-zorro-antd/i18n';\nimport { registerLocaleData } from '@angular/common';\nimport en from '@angular/common/locales/en';\nimport { FormsModule } from '@angular/forms';\nimport { HttpClientModule } from '@angular/common/http';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { IconsProviderModule } from './icons-provider.module';\nimport { NzLayoutModule } from 'ng-zorro-antd/layout';\nimport { NzMenuModule } from 'ng-zorro-antd/menu';\n\nregisterLocaleData(en);\n\n@NgModule({\n  declarations: [\n    AppComponent\n  ],\n  imports: [\n    BrowserModule,\n    AppRoutingModule,\n    FormsModule,\n    HttpClientModule,\n    BrowserAnimationsModule,\n    IconsProviderModule,\n    NzLayoutModule,\n    NzMenuModule\n  ],\n  providers: [\n    { provide: NZ_I18N, useValue: en_US }\n  ],\n  bootstrap: [AppComponent]\n})\nexport class AppModule { }\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/app.module.ts b/client/frontend/src/app/app.module.ts
+--- a/client/frontend/src/app/app.module.ts	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/app.module.ts	(date 1667726400531)
+@@ -13,12 +13,17 @@
+ import { IconsProviderModule } from './icons-provider.module';
+ import { NzLayoutModule } from 'ng-zorro-antd/layout';
+ import { NzMenuModule } from 'ng-zorro-antd/menu';
++import {BudgetComponent} from "./pages/budget/budget.component";
++import {NzGridModule} from "ng-zorro-antd/grid";
++import { NgxEchartsModule } from 'ngx-echarts';
++import * as echarts from 'echarts';
+ 
+ registerLocaleData(en);
+ 
+ @NgModule({
+   declarations: [
+-    AppComponent
++    AppComponent,
++    BudgetComponent,
+   ],
+   imports: [
+     BrowserModule,
+@@ -28,8 +33,13 @@
+     BrowserAnimationsModule,
+     IconsProviderModule,
+     NzLayoutModule,
+-    NzMenuModule
++    NzMenuModule,
++    NzGridModule,
++    NgxEchartsModule.forRoot({
++      echarts: () => import('echarts'),
++    }),
+   ],
++  exports: [NgxEchartsModule],
+   providers: [
+     { provide: NZ_I18N, useValue: en_US }
+   ],
+Index: server/.env
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/.env b/server/.env
+new file mode 100644
+--- /dev/null	(date 1667705565597)
++++ b/server/.env	(date 1667705565597)
+@@ -0,0 +1,1 @@
++AUTH_JWT=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE2NjI0MjI0MDAsImFwaV9zdWIiOiJjNzgzNTAzODJlNDc3YTMyNmYwMjQ5Mzg1M2NhMmI5NzNiYjA0OGZjYTFkZmJjMWZlMDg0NTNkNTg2NWVmNjcwMTY3NTEyMzIwMDAwMCIsInBsYyI6IjVkY2VjNzRhZTk3NzAxMGUwM2FkNjQ5NSIsImV4cCI6MTY3NTEyMzIwMCwiZGV2ZWxvcGVyX2lkIjoiYzc4MzUwMzgyZTQ3N2EzMjZmMDI0OTM4NTNjYTJiOTczYmIwNDhmY2ExZGZiYzFmZTA4NDUzZDU4NjVlZjY3MCJ9.ZqiS7hmgZ6yfCp4PNdt9vpnq4NqgyOX6MT9ZMNOsezr1-s9Enz9hugQewlEcSxBpoAfeSEupTU96_NLhlWcHGxI1_TNcTwlnwHOk9gpjju7pKlc2JyUhJg9wE2nve1Tr5SYJVCKtGChxrkZLcoEqHqSLirqvByetcAVDjbIWWDb-E-5ETvMZDzicN0gDxyA6bDwEFtBALbFAKJe1hEinCcc6N_2BYLDYKWO0KXPPlXylsMvoESg_IOkZwiIH8_gniqUXiSlHwdZGgsAbhMPKPKTh4EKXwpLqcmekB1oyyWRYHpFiWtmrSk_wK_UDt1eQ-KFbEhLEbP4Mz69ZxTwKAQ
+\ No newline at end of file
+Index: server/app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import os, json\nfrom flask import Flask, request\nfrom flask.cli import load_dotenv\nfrom api import accounts, sms\n\nfrom server.function_area.transaction import Transaction\nfrom server.text_format.format_text_to_function import TextFormat\nfrom flask_sock import Sock\n\n\nload_dotenv()  # take environment variables from .env.\nauthJWT = os.environ['AUTH_JWT']\ntwilio_phone_no = os.environ['TWILIO_PHONE_NO']\ntwilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']\ntwilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']\n\napp = Flask(__name__)\nsock = Sock(app)\n@app.route(\"/\")\ndef hello_world():\n    return \"<p>Hello, World!</p>\"\n\n@app.route(\"/test/accounts/create\")\ndef create_account():\n    account_data = accounts.create_account(authJWT)\n    return f\"{account_data}\"\n\n@app.route(\"/test/accounts/<account_id>\")\ndef get_account(account_id):\n    account_data = accounts.get_account_details(authJWT, account_id)\n    return f\"{account_data}\"\n\n@app.route(\"/test/sms/<phone_no>\")\ndef send_sms(phone_no):\n    sms.send_sms(twilio_account_sid, twilio_auth_token, twilio_phone_no, phone_no)\n\n@app.route(\"/api/transaction/recently\", methods=[\"POST\"])\ndef get_recent_transactions():\n    content = request.json\n    account_id = content[\"accountID\"]\n    day = content[\"day\"]\n    amount = content[\"amount\"]\n    trans = Transaction(account_id, authJWT)\n    return json.dumps(trans.get_recent_transaction(day, amount))\n\n@app.route(\"/api/robot\", methods=[\"POST\"])\ndef robot():\n    content = request.json\n    text = TextFormat(content)\n    return json.dumps(text.analyse_purpose())\n\nif __name__ == \"__main__\":\n    app.run(debug=True)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/server/app.py b/server/app.py
+--- a/server/app.py	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/server/app.py	(date 1667728213507)
+@@ -5,14 +5,15 @@
+ 
+ from server.function_area.transaction import Transaction
+ from server.text_format.format_text_to_function import TextFormat
++from server.api.pie_chart import *
+ from flask_sock import Sock
+ 
+ 
+ load_dotenv()  # take environment variables from .env.
+ authJWT = os.environ['AUTH_JWT']
+-twilio_phone_no = os.environ['TWILIO_PHONE_NO']
+-twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
+-twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
++#twilio_phone_no = os.environ['TWILIO_PHONE_NO']
++#twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
++#twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
+ 
+ app = Flask(__name__)
+ sock = Sock(app)
+@@ -30,9 +31,9 @@
+     account_data = accounts.get_account_details(authJWT, account_id)
+     return f"{account_data}"
+ 
+-@app.route("/test/sms/<phone_no>")
+-def send_sms(phone_no):
+-    sms.send_sms(twilio_account_sid, twilio_auth_token, twilio_phone_no, phone_no)
++#@app.route("/test/sms/<phone_no>")
++#def send_sms(phone_no):
++#    sms.send_sms(twilio_account_sid, twilio_auth_token, twilio_phone_no, phone_no)
+ 
+ @app.route("/api/transaction/recently", methods=["POST"])
+ def get_recent_transactions():
+@@ -49,5 +50,11 @@
+     text = TextFormat(content)
+     return json.dumps(text.analyse_purpose())
+ 
++@app.route("/api/pie/chart", methods=["POST"])
++def pie_chart():
++    content = request.json
++    account_id = content["accountID"]
++    return json.dumps(create_pie_chart_data(authJWT, account_id))
++
+ if __name__ == "__main__":
+     app.run(debug=True)
+Index: client/frontend/package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\n  \"name\": \"frontend\",\n  \"version\": \"0.0.0\",\n  \"scripts\": {\n    \"ng\": \"ng\",\n    \"start\": \"ng serve\",\n    \"build\": \"ng build\",\n    \"watch\": \"ng build --watch --configuration development\",\n    \"test\": \"ng test\"\n  },\n  \"private\": true,\n  \"dependencies\": {\n    \"@angular/animations\": \"^14.2.0\",\n    \"@angular/common\": \"^14.2.0\",\n    \"@angular/compiler\": \"^14.2.0\",\n    \"@angular/core\": \"^14.2.0\",\n    \"@angular/forms\": \"^14.2.0\",\n    \"@angular/platform-browser\": \"^14.2.0\",\n    \"@angular/platform-browser-dynamic\": \"^14.2.0\",\n    \"@angular/router\": \"^14.2.0\",\n    \"ng-zorro-antd\": \"^14.1.1\",\n    \"rxjs\": \"~7.5.0\",\n    \"tslib\": \"^2.3.0\",\n    \"zone.js\": \"~0.11.4\"\n  },\n  \"devDependencies\": {\n    \"@angular-devkit/build-angular\": \"^14.2.8\",\n    \"@angular/cli\": \"~14.2.8\",\n    \"@angular/compiler-cli\": \"^14.2.0\",\n    \"@types/jasmine\": \"~4.0.0\",\n    \"jasmine-core\": \"~4.3.0\",\n    \"karma\": \"~6.4.0\",\n    \"karma-chrome-launcher\": \"~3.1.0\",\n    \"karma-coverage\": \"~2.2.0\",\n    \"karma-jasmine\": \"~5.1.0\",\n    \"karma-jasmine-html-reporter\": \"~2.0.0\",\n    \"typescript\": \"~4.7.2\"\n  }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/package.json b/client/frontend/package.json
+--- a/client/frontend/package.json	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/package.json	(date 1667711355040)
+@@ -18,7 +18,12 @@
+     "@angular/platform-browser": "^14.2.0",
+     "@angular/platform-browser-dynamic": "^14.2.0",
+     "@angular/router": "^14.2.0",
++    "@types/echarts": "^4.9.16",
++    "echart": "^0.1.3",
++    "echarts": "^5.4.0",
++    "echarts-for-angular": "^0.4.0",
+     "ng-zorro-antd": "^14.1.1",
++    "ngx-echarts": "^14.0.0",
+     "rxjs": "~7.5.0",
+     "tslib": "^2.3.0",
+     "zone.js": "~0.11.4"
+@@ -36,4 +41,4 @@
+     "karma-jasmine-html-reporter": "~2.0.0",
+     "typescript": "~4.7.2"
+   }
+-}
+\ No newline at end of file
++}
+Index: client/frontend/src/app/pages/budget/budget.component.scss
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/src/app/pages/budget/budget.component.scss b/client/frontend/src/app/pages/budget/budget.component.scss
+--- a/client/frontend/src/app/pages/budget/budget.component.scss	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/src/app/pages/budget/budget.component.scss	(date 1667709516139)
+@@ -1,0 +1,14 @@
++.mGraph-wrapper{
++    width: 100%;
++    height: 239px;
++    background: #fff;
++    position: relative;
++    display: flex;
++    align-items: center;
++    justify-content: center;
++  }
++  .mGraph-wrapper .mGraph{
++    width: 100%;
++    height: 100%;
++    overflow: hidden;
++  }
+Index: client/frontend/package-lock.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/client/frontend/package-lock.json b/client/frontend/package-lock.json
+--- a/client/frontend/package-lock.json	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/client/frontend/package-lock.json	(date 1667726429751)
+@@ -16,7 +16,12 @@
+         "@angular/platform-browser": "^14.2.0",
+         "@angular/platform-browser-dynamic": "^14.2.0",
+         "@angular/router": "^14.2.0",
++        "@types/echarts": "^4.9.16",
++        "echart": "^0.1.3",
++        "echarts": "^5.4.0",
++        "echarts-for-angular": "^0.4.0",
+         "ng-zorro-antd": "^14.1.1",
++        "ngx-echarts": "^14.0.0",
+         "rxjs": "~7.5.0",
+         "tslib": "^2.3.0",
+         "zone.js": "~0.11.4"
+@@ -2957,6 +2962,14 @@
+       "integrity": "sha512-vt+kDhq/M2ayberEtJcIN/hxXy1Pk+59g2FV/ZQceeaTyCtCucjL2Q7FXlFjtWn4n15KCr1NE2lNNFhp0lEThw==",
+       "dev": true
+     },
++    "node_modules/@types/echarts": {
++      "version": "4.9.16",
++      "resolved": "https://registry.npmjs.org/@types/echarts/-/echarts-4.9.16.tgz",
++      "integrity": "sha512-bfiagfPw3dWauAIJ9fgoJQoL4hLWlGcltqwbE6LGye0NIY5xnbZau+mDmadCzGojic3MWuFDCUiO25kl4sRGeA==",
++      "dependencies": {
++        "@types/zrender": "*"
++      }
++    },
+     "node_modules/@types/eslint": {
+       "version": "8.4.10",
+       "resolved": "https://registry.npmjs.org/@types/eslint/-/eslint-8.4.10.tgz",
+@@ -3100,6 +3113,11 @@
+         "@types/node": "*"
+       }
+     },
++    "node_modules/@types/zrender": {
++      "version": "4.0.3",
++      "resolved": "https://registry.npmjs.org/@types/zrender/-/zrender-4.0.3.tgz",
++      "integrity": "sha512-EPI269lkHNsObwILJ1k1z7znLjKyePuWRy/XKK0shSGpBb9cIX307arcwJV4+2NeZj5wEjN06r4D8yFv7sI06g=="
++    },
+     "node_modules/@webassemblyjs/ast": {
+       "version": "1.11.1",
+       "resolved": "https://registry.npmjs.org/@webassemblyjs/ast/-/ast-1.11.1.tgz",
+@@ -3280,7 +3298,6 @@
+       "version": "1.3.8",
+       "resolved": "https://registry.npmjs.org/accepts/-/accepts-1.3.8.tgz",
+       "integrity": "sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==",
+-      "dev": true,
+       "dependencies": {
+         "mime-types": "~2.1.34",
+         "negotiator": "0.6.3"
+@@ -3487,6 +3504,11 @@
+         "node": ">=4"
+       }
+     },
++    "node_modules/any-promise": {
++      "version": "1.3.0",
++      "resolved": "https://registry.npmjs.org/any-promise/-/any-promise-1.3.0.tgz",
++      "integrity": "sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A=="
++    },
+     "node_modules/anymatch": {
+       "version": "3.1.2",
+       "resolved": "https://registry.npmjs.org/anymatch/-/anymatch-3.1.2.tgz",
+@@ -3917,6 +3939,18 @@
+         "node": "^12.13.0 || ^14.15.0 || >=16.0.0"
+       }
+     },
++    "node_modules/cache-content-type": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/cache-content-type/-/cache-content-type-1.0.1.tgz",
++      "integrity": "sha512-IKufZ1o4Ut42YUrZSo8+qnMTrFuKkvyoLXUywKz9GJ5BrhOFGhLdkx9sG4KAnVvbY6kEcSFjLQul+DVmBm2bgA==",
++      "dependencies": {
++        "mime-types": "^2.1.18",
++        "ylru": "^1.2.0"
++      },
++      "engines": {
++        "node": ">= 6.0.0"
++      }
++    },
+     "node_modules/call-bind": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/call-bind/-/call-bind-1.0.2.tgz",
+@@ -4105,6 +4139,15 @@
+         "node": ">=6"
+       }
+     },
++    "node_modules/co": {
++      "version": "4.6.0",
++      "resolved": "https://registry.npmjs.org/co/-/co-4.6.0.tgz",
++      "integrity": "sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==",
++      "engines": {
++        "iojs": ">= 1.0.0",
++        "node": ">= 0.12.0"
++      }
++    },
+     "node_modules/color-convert": {
+       "version": "1.9.3",
+       "resolved": "https://registry.npmjs.org/color-convert/-/color-convert-1.9.3.tgz",
+@@ -4262,7 +4305,6 @@
+       "version": "0.5.4",
+       "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz",
+       "integrity": "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==",
+-      "dev": true,
+       "dependencies": {
+         "safe-buffer": "5.2.1"
+       },
+@@ -4274,7 +4316,6 @@
+       "version": "1.0.4",
+       "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.4.tgz",
+       "integrity": "sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -4300,6 +4341,18 @@
+       "integrity": "sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==",
+       "dev": true
+     },
++    "node_modules/cookies": {
++      "version": "0.8.0",
++      "resolved": "https://registry.npmjs.org/cookies/-/cookies-0.8.0.tgz",
++      "integrity": "sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==",
++      "dependencies": {
++        "depd": "~2.0.0",
++        "keygrip": "~1.1.0"
++      },
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
+     "node_modules/copy-anything": {
+       "version": "2.0.6",
+       "resolved": "https://registry.npmjs.org/copy-anything/-/copy-anything-2.0.6.tgz",
+@@ -4686,7 +4739,6 @@
+       "version": "4.3.4",
+       "resolved": "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz",
+       "integrity": "sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==",
+-      "dev": true,
+       "dependencies": {
+         "ms": "2.1.2"
+       },
+@@ -4699,6 +4751,11 @@
+         }
+       }
+     },
++    "node_modules/deep-equal": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/deep-equal/-/deep-equal-1.0.1.tgz",
++      "integrity": "sha512-bHtC0iYvWhyaTzvV3CZgPeZQqCOBGyGsVV7v4eevpdkLHfiSrXUdBG+qAuSz4RI70sszvjQ1QSZ98An1yNwpSw=="
++    },
+     "node_modules/default-gateway": {
+       "version": "6.0.3",
+       "resolved": "https://registry.npmjs.org/default-gateway/-/default-gateway-6.0.3.tgz",
+@@ -4735,14 +4792,12 @@
+     "node_modules/delegates": {
+       "version": "1.0.0",
+       "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz",
+-      "integrity": "sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==",
+-      "dev": true
++      "integrity": "sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ=="
+     },
+     "node_modules/depd": {
+       "version": "2.0.0",
+       "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+       "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.8"
+       }
+@@ -4760,7 +4815,6 @@
+       "version": "1.2.0",
+       "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz",
+       "integrity": "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.8",
+         "npm": "1.2.8000 || >= 1.4.16"
+@@ -4875,11 +4929,50 @@
+         "url": "https://github.com/fb55/domutils?sponsor=1"
+       }
+     },
++    "node_modules/echart": {
++      "version": "0.1.3",
++      "resolved": "https://registry.npmjs.org/echart/-/echart-0.1.3.tgz",
++      "integrity": "sha512-DbTrEjHnYrSEqzRBkLhVs0T512ZZwSDW8hIE57lY2Rwui5j6sdFoO37W0tDq/Tb7Q25MaRAwiQMkMCzOX4FjWw==",
++      "dependencies": {
++        "koa": "^2.2.0",
++        "koa-router": "^7.1.1"
++      },
++      "bin": {
++        "mock": "bin/mock"
++      }
++    },
++    "node_modules/echarts": {
++      "version": "5.4.0",
++      "resolved": "https://registry.npmjs.org/echarts/-/echarts-5.4.0.tgz",
++      "integrity": "sha512-uPsO9VRUIKAdFOoH3B0aNg7NRVdN7aM39/OjovjO9MwmWsAkfGyeXJhK+dbRi51iDrQWliXV60/XwLA7kg3z0w==",
++      "dependencies": {
++        "tslib": "2.3.0",
++        "zrender": "5.4.0"
++      }
++    },
++    "node_modules/echarts-for-angular": {
++      "version": "0.4.0",
++      "resolved": "https://registry.npmjs.org/echarts-for-angular/-/echarts-for-angular-0.4.0.tgz",
++      "integrity": "sha512-pnse2QSldSeBt0BT/CTe99xxbs8obfoFFpa0+gH/RTsF7aA+CB+k6h2fNgnex6Xnm8k3NU0TzkphU+GVPoKRmA==",
++      "dependencies": {
++        "tslib": "2"
++      },
++      "peerDependencies": {
++        "@angular/common": ">=9",
++        "@angular/core": ">=9",
++        "echarts": ">=5",
++        "rxjs": ">=6"
++      }
++    },
++    "node_modules/echarts/node_modules/tslib": {
++      "version": "2.3.0",
++      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.3.0.tgz",
++      "integrity": "sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg=="
++    },
+     "node_modules/ee-first": {
+       "version": "1.1.1",
+       "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+-      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+-      "dev": true
++      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="
+     },
+     "node_modules/electron-to-chromium": {
+       "version": "1.4.284",
+@@ -4906,7 +4999,6 @@
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
+       "integrity": "sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.8"
+       }
+@@ -5416,8 +5508,7 @@
+     "node_modules/escape-html": {
+       "version": "1.0.3",
+       "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+-      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+-      "dev": true
++      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow=="
+     },
+     "node_modules/escape-string-regexp": {
+       "version": "1.0.5",
+@@ -5868,7 +5959,6 @@
+       "version": "0.5.2",
+       "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz",
+       "integrity": "sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -6105,7 +6195,20 @@
+       "version": "1.0.3",
+       "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.0.3.tgz",
+       "integrity": "sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==",
+-      "dev": true,
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
++    "node_modules/has-tostringtag": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.0.tgz",
++      "integrity": "sha512-kFjcSNhnlGV1kyoGk7OXKSawH5JOb/LzUc5w9B02hOTO0dfFRjbHQKvg1d6cf3HbeUmtU9VbbV3qzZ2Teh97WQ==",
++      "dependencies": {
++        "has-symbols": "^1.0.2"
++      },
+       "engines": {
+         "node": ">= 0.4"
+       },
+@@ -6202,6 +6305,41 @@
+       "integrity": "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==",
+       "dev": true
+     },
++    "node_modules/http-assert": {
++      "version": "1.5.0",
++      "resolved": "https://registry.npmjs.org/http-assert/-/http-assert-1.5.0.tgz",
++      "integrity": "sha512-uPpH7OKX4H25hBmU6G1jWNaqJGpTXxey+YOUizJUAgu0AjLUeC8D73hTrhvDS5D+GJN1DN1+hhc/eF/wpxtp0w==",
++      "dependencies": {
++        "deep-equal": "~1.0.1",
++        "http-errors": "~1.8.0"
++      },
++      "engines": {
++        "node": ">= 0.8"
++      }
++    },
++    "node_modules/http-assert/node_modules/depd": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++      "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ==",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/http-assert/node_modules/http-errors": {
++      "version": "1.8.1",
++      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++      "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++      "dependencies": {
++        "depd": "~1.1.2",
++        "inherits": "2.0.4",
++        "setprototypeof": "1.2.0",
++        "statuses": ">= 1.5.0 < 2",
++        "toidentifier": "1.0.1"
++      },
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
+     "node_modules/http-cache-semantics": {
+       "version": "4.1.0",
+       "resolved": "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz",
+@@ -6474,8 +6612,7 @@
+     "node_modules/inherits": {
+       "version": "2.0.4",
+       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
+-      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+-      "dev": true
++      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="
+     },
+     "node_modules/ini": {
+       "version": "3.0.0",
+@@ -6660,6 +6797,20 @@
+         "node": ">=8"
+       }
+     },
++    "node_modules/is-generator-function": {
++      "version": "1.0.10",
++      "resolved": "https://registry.npmjs.org/is-generator-function/-/is-generator-function-1.0.10.tgz",
++      "integrity": "sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==",
++      "dependencies": {
++        "has-tostringtag": "^1.0.0"
++      },
++      "engines": {
++        "node": ">= 0.4"
++      },
++      "funding": {
++        "url": "https://github.com/sponsors/ljharb"
++      }
++    },
+     "node_modules/is-glob": {
+       "version": "4.0.3",
+       "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
+@@ -7246,6 +7397,17 @@
+         "node": ">=10"
+       }
+     },
++    "node_modules/keygrip": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/keygrip/-/keygrip-1.1.0.tgz",
++      "integrity": "sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==",
++      "dependencies": {
++        "tsscmp": "1.0.6"
++      },
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
+     "node_modules/kind-of": {
+       "version": "6.0.3",
+       "resolved": "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz",
+@@ -7264,6 +7426,147 @@
+         "node": ">= 8"
+       }
+     },
++    "node_modules/koa": {
++      "version": "2.13.4",
++      "resolved": "https://registry.npmjs.org/koa/-/koa-2.13.4.tgz",
++      "integrity": "sha512-43zkIKubNbnrULWlHdN5h1g3SEKXOEzoAlRsHOTFpnlDu8JlAOZSMJBLULusuXRequboiwJcj5vtYXKB3k7+2g==",
++      "dependencies": {
++        "accepts": "^1.3.5",
++        "cache-content-type": "^1.0.0",
++        "content-disposition": "~0.5.2",
++        "content-type": "^1.0.4",
++        "cookies": "~0.8.0",
++        "debug": "^4.3.2",
++        "delegates": "^1.0.0",
++        "depd": "^2.0.0",
++        "destroy": "^1.0.4",
++        "encodeurl": "^1.0.2",
++        "escape-html": "^1.0.3",
++        "fresh": "~0.5.2",
++        "http-assert": "^1.3.0",
++        "http-errors": "^1.6.3",
++        "is-generator-function": "^1.0.7",
++        "koa-compose": "^4.1.0",
++        "koa-convert": "^2.0.0",
++        "on-finished": "^2.3.0",
++        "only": "~0.0.2",
++        "parseurl": "^1.3.2",
++        "statuses": "^1.5.0",
++        "type-is": "^1.6.16",
++        "vary": "^1.1.2"
++      },
++      "engines": {
++        "node": "^4.8.4 || ^6.10.1 || ^7.10.1 || >= 8.1.4"
++      }
++    },
++    "node_modules/koa-compose": {
++      "version": "4.1.0",
++      "resolved": "https://registry.npmjs.org/koa-compose/-/koa-compose-4.1.0.tgz",
++      "integrity": "sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw=="
++    },
++    "node_modules/koa-convert": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/koa-convert/-/koa-convert-2.0.0.tgz",
++      "integrity": "sha512-asOvN6bFlSnxewce2e/DK3p4tltyfC4VM7ZwuTuepI7dEQVcvpyFuBcEARu1+Hxg8DIwytce2n7jrZtRlPrARA==",
++      "dependencies": {
++        "co": "^4.6.0",
++        "koa-compose": "^4.1.0"
++      },
++      "engines": {
++        "node": ">= 10"
++      }
++    },
++    "node_modules/koa-router": {
++      "version": "7.4.0",
++      "resolved": "https://registry.npmjs.org/koa-router/-/koa-router-7.4.0.tgz",
++      "integrity": "sha512-IWhaDXeAnfDBEpWS6hkGdZ1ablgr6Q6pGdXCyK38RbzuH4LkUOpPqPw+3f8l8aTDrQmBQ7xJc0bs2yV4dzcO+g==",
++      "dependencies": {
++        "debug": "^3.1.0",
++        "http-errors": "^1.3.1",
++        "koa-compose": "^3.0.0",
++        "methods": "^1.0.1",
++        "path-to-regexp": "^1.1.1",
++        "urijs": "^1.19.0"
++      },
++      "engines": {
++        "node": ">= 4"
++      }
++    },
++    "node_modules/koa-router/node_modules/debug": {
++      "version": "3.2.7",
++      "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
++      "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
++      "dependencies": {
++        "ms": "^2.1.1"
++      }
++    },
++    "node_modules/koa-router/node_modules/depd": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++      "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ==",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/koa-router/node_modules/http-errors": {
++      "version": "1.8.1",
++      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++      "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++      "dependencies": {
++        "depd": "~1.1.2",
++        "inherits": "2.0.4",
++        "setprototypeof": "1.2.0",
++        "statuses": ">= 1.5.0 < 2",
++        "toidentifier": "1.0.1"
++      },
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/koa-router/node_modules/isarray": {
++      "version": "0.0.1",
++      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
++      "integrity": "sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ=="
++    },
++    "node_modules/koa-router/node_modules/koa-compose": {
++      "version": "3.2.1",
++      "resolved": "https://registry.npmjs.org/koa-compose/-/koa-compose-3.2.1.tgz",
++      "integrity": "sha512-8gen2cvKHIZ35eDEik5WOo8zbVp9t4cP8p4hW4uE55waxolLRexKKrqfCpwhGVppnB40jWeF8bZeTVg99eZgPw==",
++      "dependencies": {
++        "any-promise": "^1.1.0"
++      }
++    },
++    "node_modules/koa-router/node_modules/path-to-regexp": {
++      "version": "1.8.0",
++      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.8.0.tgz",
++      "integrity": "sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==",
++      "dependencies": {
++        "isarray": "0.0.1"
++      }
++    },
++    "node_modules/koa/node_modules/http-errors": {
++      "version": "1.8.1",
++      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++      "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++      "dependencies": {
++        "depd": "~1.1.2",
++        "inherits": "2.0.4",
++        "setprototypeof": "1.2.0",
++        "statuses": ">= 1.5.0 < 2",
++        "toidentifier": "1.0.1"
++      },
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
++    "node_modules/koa/node_modules/http-errors/node_modules/depd": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++      "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ==",
++      "engines": {
++        "node": ">= 0.6"
++      }
++    },
+     "node_modules/less": {
+       "version": "4.1.3",
+       "resolved": "https://registry.npmjs.org/less/-/less-4.1.3.tgz",
+@@ -7610,7 +7913,6 @@
+       "version": "0.3.0",
+       "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
+       "integrity": "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -7652,7 +7954,6 @@
+       "version": "1.1.2",
+       "resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
+       "integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -7686,7 +7987,6 @@
+       "version": "1.52.0",
+       "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
+       "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -7695,7 +7995,6 @@
+       "version": "2.1.35",
+       "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
+       "integrity": "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==",
+-      "dev": true,
+       "dependencies": {
+         "mime-db": "1.52.0"
+       },
+@@ -7892,8 +8191,7 @@
+     "node_modules/ms": {
+       "version": "2.1.2",
+       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+-      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
+-      "dev": true
++      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w=="
+     },
+     "node_modules/multicast-dns": {
+       "version": "7.2.5",
+@@ -7971,7 +8269,6 @@
+       "version": "0.6.3",
+       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz",
+       "integrity": "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -8001,6 +8298,17 @@
+         "@angular/router": "^14.1.0"
+       }
+     },
++    "node_modules/ngx-echarts": {
++      "version": "14.0.0",
++      "resolved": "https://registry.npmjs.org/ngx-echarts/-/ngx-echarts-14.0.0.tgz",
++      "integrity": "sha512-Q8J/DXiWqYM2vqTfQq16A7KyxbWECZSiAApS0rBjsAJCPjG/VZogUe0snZ/i3mA6bV3vYm41imTYOaH+Rl97QA==",
++      "dependencies": {
++        "tslib": "^2.3.0"
++      },
++      "peerDependencies": {
++        "echarts": ">=5.0.0"
++      }
++    },
+     "node_modules/nice-napi": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/nice-napi/-/nice-napi-1.0.2.tgz",
+@@ -8360,7 +8668,6 @@
+       "version": "2.4.1",
+       "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
+       "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+-      "dev": true,
+       "dependencies": {
+         "ee-first": "1.1.1"
+       },
+@@ -8401,6 +8708,11 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
++    "node_modules/only": {
++      "version": "0.0.2",
++      "resolved": "https://registry.npmjs.org/only/-/only-0.0.2.tgz",
++      "integrity": "sha512-Fvw+Jemq5fjjyWz6CpKx6w9s7xxqo3+JCyM0WXWeCSOboZ8ABkyvP8ID4CZuChA/wxSx+XSJmdOm8rGVyJ1hdQ=="
++    },
+     "node_modules/open": {
+       "version": "8.4.0",
+       "resolved": "https://registry.npmjs.org/open/-/open-8.4.0.tgz",
+@@ -8711,7 +9023,6 @@
+       "version": "1.3.3",
+       "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
+       "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.8"
+       }
+@@ -10037,7 +10348,6 @@
+       "version": "5.2.1",
+       "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+       "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+-      "dev": true,
+       "funding": [
+         {
+           "type": "github",
+@@ -10382,8 +10692,7 @@
+     "node_modules/setprototypeof": {
+       "version": "1.2.0",
+       "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+-      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
+-      "dev": true
++      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw=="
+     },
+     "node_modules/shallow-clone": {
+       "version": "3.0.1",
+@@ -10695,7 +11004,6 @@
+       "version": "1.5.0",
+       "resolved": "https://registry.npmjs.org/statuses/-/statuses-1.5.0.tgz",
+       "integrity": "sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.6"
+       }
+@@ -11115,7 +11423,6 @@
+       "version": "1.0.1",
+       "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
+       "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
+-      "dev": true,
+       "engines": {
+         "node": ">=0.6"
+       }
+@@ -11134,6 +11441,14 @@
+       "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.4.1.tgz",
+       "integrity": "sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA=="
+     },
++    "node_modules/tsscmp": {
++      "version": "1.0.6",
++      "resolved": "https://registry.npmjs.org/tsscmp/-/tsscmp-1.0.6.tgz",
++      "integrity": "sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA==",
++      "engines": {
++        "node": ">=0.6.x"
++      }
++    },
+     "node_modules/type-fest": {
+       "version": "0.21.3",
+       "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-0.21.3.tgz",
+@@ -11150,7 +11465,6 @@
+       "version": "1.6.18",
+       "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
+       "integrity": "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==",
+-      "dev": true,
+       "dependencies": {
+         "media-typer": "0.3.0",
+         "mime-types": "~2.1.24"
+@@ -11308,6 +11622,11 @@
+         "punycode": "^2.1.0"
+       }
+     },
++    "node_modules/urijs": {
++      "version": "1.19.11",
++      "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.19.11.tgz",
++      "integrity": "sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ=="
++    },
+     "node_modules/util-deprecate": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
+@@ -11358,7 +11677,6 @@
+       "version": "1.1.2",
+       "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+       "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
+-      "dev": true,
+       "engines": {
+         "node": ">= 0.8"
+       }
+@@ -11857,6 +12175,14 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/ylru": {
++      "version": "1.3.2",
++      "resolved": "https://registry.npmjs.org/ylru/-/ylru-1.3.2.tgz",
++      "integrity": "sha512-RXRJzMiK6U2ye0BlGGZnmpwJDPgakn6aNQ0A7gHRbD4I0uvK4TW6UqkK1V0pp9jskjJBAXd3dRrbzWkqJ+6cxA==",
++      "engines": {
++        "node": ">= 4.0.0"
++      }
++    },
+     "node_modules/zone.js": {
+       "version": "0.11.8",
+       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.11.8.tgz",
+@@ -11864,6 +12190,19 @@
+       "dependencies": {
+         "tslib": "^2.3.0"
+       }
++    },
++    "node_modules/zrender": {
++      "version": "5.4.0",
++      "resolved": "https://registry.npmjs.org/zrender/-/zrender-5.4.0.tgz",
++      "integrity": "sha512-rOS09Z2HSVGFs2dn/TuYk5BlCaZcVe8UDLLjj1ySYF828LATKKdxuakSZMvrDz54yiKPDYVfjdKqcX8Jky3BIA==",
++      "dependencies": {
++        "tslib": "2.3.0"
++      }
++    },
++    "node_modules/zrender/node_modules/tslib": {
++      "version": "2.3.0",
++      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.3.0.tgz",
++      "integrity": "sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg=="
+     }
+   },
+   "dependencies": {
+@@ -13874,6 +14213,14 @@
+       "integrity": "sha512-vt+kDhq/M2ayberEtJcIN/hxXy1Pk+59g2FV/ZQceeaTyCtCucjL2Q7FXlFjtWn4n15KCr1NE2lNNFhp0lEThw==",
+       "dev": true
+     },
++    "@types/echarts": {
++      "version": "4.9.16",
++      "resolved": "https://registry.npmjs.org/@types/echarts/-/echarts-4.9.16.tgz",
++      "integrity": "sha512-bfiagfPw3dWauAIJ9fgoJQoL4hLWlGcltqwbE6LGye0NIY5xnbZau+mDmadCzGojic3MWuFDCUiO25kl4sRGeA==",
++      "requires": {
++        "@types/zrender": "*"
++      }
++    },
+     "@types/eslint": {
+       "version": "8.4.10",
+       "resolved": "https://registry.npmjs.org/@types/eslint/-/eslint-8.4.10.tgz",
+@@ -14017,6 +14364,11 @@
+         "@types/node": "*"
+       }
+     },
++    "@types/zrender": {
++      "version": "4.0.3",
++      "resolved": "https://registry.npmjs.org/@types/zrender/-/zrender-4.0.3.tgz",
++      "integrity": "sha512-EPI269lkHNsObwILJ1k1z7znLjKyePuWRy/XKK0shSGpBb9cIX307arcwJV4+2NeZj5wEjN06r4D8yFv7sI06g=="
++    },
+     "@webassemblyjs/ast": {
+       "version": "1.11.1",
+       "resolved": "https://registry.npmjs.org/@webassemblyjs/ast/-/ast-1.11.1.tgz",
+@@ -14197,7 +14549,6 @@
+       "version": "1.3.8",
+       "resolved": "https://registry.npmjs.org/accepts/-/accepts-1.3.8.tgz",
+       "integrity": "sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==",
+-      "dev": true,
+       "requires": {
+         "mime-types": "~2.1.34",
+         "negotiator": "0.6.3"
+@@ -14343,6 +14694,11 @@
+         "color-convert": "^1.9.0"
+       }
+     },
++    "any-promise": {
++      "version": "1.3.0",
++      "resolved": "https://registry.npmjs.org/any-promise/-/any-promise-1.3.0.tgz",
++      "integrity": "sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A=="
++    },
+     "anymatch": {
+       "version": "3.1.2",
+       "resolved": "https://registry.npmjs.org/anymatch/-/anymatch-3.1.2.tgz",
+@@ -14663,6 +15019,15 @@
+         "unique-filename": "^1.1.1"
+       }
+     },
++    "cache-content-type": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/cache-content-type/-/cache-content-type-1.0.1.tgz",
++      "integrity": "sha512-IKufZ1o4Ut42YUrZSo8+qnMTrFuKkvyoLXUywKz9GJ5BrhOFGhLdkx9sG4KAnVvbY6kEcSFjLQul+DVmBm2bgA==",
++      "requires": {
++        "mime-types": "^2.1.18",
++        "ylru": "^1.2.0"
++      }
++    },
+     "call-bind": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/call-bind/-/call-bind-1.0.2.tgz",
+@@ -14791,6 +15156,11 @@
+         "shallow-clone": "^3.0.0"
+       }
+     },
++    "co": {
++      "version": "4.6.0",
++      "resolved": "https://registry.npmjs.org/co/-/co-4.6.0.tgz",
++      "integrity": "sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ=="
++    },
+     "color-convert": {
+       "version": "1.9.3",
+       "resolved": "https://registry.npmjs.org/color-convert/-/color-convert-1.9.3.tgz",
+@@ -14934,7 +15304,6 @@
+       "version": "0.5.4",
+       "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz",
+       "integrity": "sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==",
+-      "dev": true,
+       "requires": {
+         "safe-buffer": "5.2.1"
+       }
+@@ -14942,8 +15311,7 @@
+     "content-type": {
+       "version": "1.0.4",
+       "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.4.tgz",
+-      "integrity": "sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==",
+-      "dev": true
++      "integrity": "sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA=="
+     },
+     "convert-source-map": {
+       "version": "1.9.0",
+@@ -14963,6 +15331,15 @@
+       "integrity": "sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==",
+       "dev": true
+     },
++    "cookies": {
++      "version": "0.8.0",
++      "resolved": "https://registry.npmjs.org/cookies/-/cookies-0.8.0.tgz",
++      "integrity": "sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==",
++      "requires": {
++        "depd": "~2.0.0",
++        "keygrip": "~1.1.0"
++      }
++    },
+     "copy-anything": {
+       "version": "2.0.6",
+       "resolved": "https://registry.npmjs.org/copy-anything/-/copy-anything-2.0.6.tgz",
+@@ -15227,11 +15604,15 @@
+       "version": "4.3.4",
+       "resolved": "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz",
+       "integrity": "sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==",
+-      "dev": true,
+       "requires": {
+         "ms": "2.1.2"
+       }
+     },
++    "deep-equal": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/deep-equal/-/deep-equal-1.0.1.tgz",
++      "integrity": "sha512-bHtC0iYvWhyaTzvV3CZgPeZQqCOBGyGsVV7v4eevpdkLHfiSrXUdBG+qAuSz4RI70sszvjQ1QSZ98An1yNwpSw=="
++    },
+     "default-gateway": {
+       "version": "6.0.3",
+       "resolved": "https://registry.npmjs.org/default-gateway/-/default-gateway-6.0.3.tgz",
+@@ -15259,14 +15640,12 @@
+     "delegates": {
+       "version": "1.0.0",
+       "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz",
+-      "integrity": "sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==",
+-      "dev": true
++      "integrity": "sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ=="
+     },
+     "depd": {
+       "version": "2.0.0",
+       "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+-      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+-      "dev": true
++      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw=="
+     },
+     "dependency-graph": {
+       "version": "0.11.0",
+@@ -15277,8 +15656,7 @@
+     "destroy": {
+       "version": "1.2.0",
+       "resolved": "https://registry.npmjs.org/destroy/-/destroy-1.2.0.tgz",
+-      "integrity": "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==",
+-      "dev": true
++      "integrity": "sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg=="
+     },
+     "detect-node": {
+       "version": "2.1.0",
+@@ -15365,11 +15743,43 @@
+         "domhandler": "^4.2.0"
+       }
+     },
++    "echart": {
++      "version": "0.1.3",
++      "resolved": "https://registry.npmjs.org/echart/-/echart-0.1.3.tgz",
++      "integrity": "sha512-DbTrEjHnYrSEqzRBkLhVs0T512ZZwSDW8hIE57lY2Rwui5j6sdFoO37W0tDq/Tb7Q25MaRAwiQMkMCzOX4FjWw==",
++      "requires": {
++        "koa": "^2.2.0",
++        "koa-router": "^7.1.1"
++      }
++    },
++    "echarts": {
++      "version": "5.4.0",
++      "resolved": "https://registry.npmjs.org/echarts/-/echarts-5.4.0.tgz",
++      "integrity": "sha512-uPsO9VRUIKAdFOoH3B0aNg7NRVdN7aM39/OjovjO9MwmWsAkfGyeXJhK+dbRi51iDrQWliXV60/XwLA7kg3z0w==",
++      "requires": {
++        "tslib": "2.3.0",
++        "zrender": "5.4.0"
++      },
++      "dependencies": {
++        "tslib": {
++          "version": "2.3.0",
++          "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.3.0.tgz",
++          "integrity": "sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg=="
++        }
++      }
++    },
++    "echarts-for-angular": {
++      "version": "0.4.0",
++      "resolved": "https://registry.npmjs.org/echarts-for-angular/-/echarts-for-angular-0.4.0.tgz",
++      "integrity": "sha512-pnse2QSldSeBt0BT/CTe99xxbs8obfoFFpa0+gH/RTsF7aA+CB+k6h2fNgnex6Xnm8k3NU0TzkphU+GVPoKRmA==",
++      "requires": {
++        "tslib": "2"
++      }
++    },
+     "ee-first": {
+       "version": "1.1.1",
+       "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+-      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+-      "dev": true
++      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="
+     },
+     "electron-to-chromium": {
+       "version": "1.4.284",
+@@ -15392,8 +15802,7 @@
+     "encodeurl": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz",
+-      "integrity": "sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==",
+-      "dev": true
++      "integrity": "sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w=="
+     },
+     "encoding": {
+       "version": "0.1.13",
+@@ -15685,8 +16094,7 @@
+     "escape-html": {
+       "version": "1.0.3",
+       "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+-      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+-      "dev": true
++      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow=="
+     },
+     "escape-string-regexp": {
+       "version": "1.0.5",
+@@ -16036,8 +16444,7 @@
+     "fresh": {
+       "version": "0.5.2",
+       "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.5.2.tgz",
+-      "integrity": "sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==",
+-      "dev": true
++      "integrity": "sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q=="
+     },
+     "fs-extra": {
+       "version": "8.1.0",
+@@ -16212,8 +16619,15 @@
+     "has-symbols": {
+       "version": "1.0.3",
+       "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.0.3.tgz",
+-      "integrity": "sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==",
+-      "dev": true
++      "integrity": "sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A=="
++    },
++    "has-tostringtag": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/has-tostringtag/-/has-tostringtag-1.0.0.tgz",
++      "integrity": "sha512-kFjcSNhnlGV1kyoGk7OXKSawH5JOb/LzUc5w9B02hOTO0dfFRjbHQKvg1d6cf3HbeUmtU9VbbV3qzZ2Teh97WQ==",
++      "requires": {
++        "has-symbols": "^1.0.2"
++      }
+     },
+     "has-unicode": {
+       "version": "2.0.1",
+@@ -16303,6 +16717,34 @@
+       "integrity": "sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==",
+       "dev": true
+     },
++    "http-assert": {
++      "version": "1.5.0",
++      "resolved": "https://registry.npmjs.org/http-assert/-/http-assert-1.5.0.tgz",
++      "integrity": "sha512-uPpH7OKX4H25hBmU6G1jWNaqJGpTXxey+YOUizJUAgu0AjLUeC8D73hTrhvDS5D+GJN1DN1+hhc/eF/wpxtp0w==",
++      "requires": {
++        "deep-equal": "~1.0.1",
++        "http-errors": "~1.8.0"
++      },
++      "dependencies": {
++        "depd": {
++          "version": "1.1.2",
++          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++          "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ=="
++        },
++        "http-errors": {
++          "version": "1.8.1",
++          "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++          "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++          "requires": {
++            "depd": "~1.1.2",
++            "inherits": "2.0.4",
++            "setprototypeof": "1.2.0",
++            "statuses": ">= 1.5.0 < 2",
++            "toidentifier": "1.0.1"
++          }
++        }
++      }
++    },
+     "http-cache-semantics": {
+       "version": "4.1.0",
+       "resolved": "https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz",
+@@ -16501,8 +16943,7 @@
+     "inherits": {
+       "version": "2.0.4",
+       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
+-      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+-      "dev": true
++      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="
+     },
+     "ini": {
+       "version": "3.0.0",
+@@ -16638,6 +17079,14 @@
+       "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
+       "dev": true
+     },
++    "is-generator-function": {
++      "version": "1.0.10",
++      "resolved": "https://registry.npmjs.org/is-generator-function/-/is-generator-function-1.0.10.tgz",
++      "integrity": "sha512-jsEjy9l3yiXEQ+PsXdmBwEPcOxaXWLspKdplFUVI9vq1iZgIekeC0L167qeu86czQaxed3q/Uzuw0swL0irL8A==",
++      "requires": {
++        "has-tostringtag": "^1.0.0"
++      }
++    },
+     "is-glob": {
+       "version": "4.0.3",
+       "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
+@@ -17091,6 +17540,14 @@
+         "source-map-support": "^0.5.5"
+       }
+     },
++    "keygrip": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/keygrip/-/keygrip-1.1.0.tgz",
++      "integrity": "sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==",
++      "requires": {
++        "tsscmp": "1.0.6"
++      }
++    },
+     "kind-of": {
+       "version": "6.0.3",
+       "resolved": "https://registry.npmjs.org/kind-of/-/kind-of-6.0.3.tgz",
+@@ -17103,6 +17560,132 @@
+       "integrity": "sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==",
+       "dev": true
+     },
++    "koa": {
++      "version": "2.13.4",
++      "resolved": "https://registry.npmjs.org/koa/-/koa-2.13.4.tgz",
++      "integrity": "sha512-43zkIKubNbnrULWlHdN5h1g3SEKXOEzoAlRsHOTFpnlDu8JlAOZSMJBLULusuXRequboiwJcj5vtYXKB3k7+2g==",
++      "requires": {
++        "accepts": "^1.3.5",
++        "cache-content-type": "^1.0.0",
++        "content-disposition": "~0.5.2",
++        "content-type": "^1.0.4",
++        "cookies": "~0.8.0",
++        "debug": "^4.3.2",
++        "delegates": "^1.0.0",
++        "depd": "^2.0.0",
++        "destroy": "^1.0.4",
++        "encodeurl": "^1.0.2",
++        "escape-html": "^1.0.3",
++        "fresh": "~0.5.2",
++        "http-assert": "^1.3.0",
++        "http-errors": "^1.6.3",
++        "is-generator-function": "^1.0.7",
++        "koa-compose": "^4.1.0",
++        "koa-convert": "^2.0.0",
++        "on-finished": "^2.3.0",
++        "only": "~0.0.2",
++        "parseurl": "^1.3.2",
++        "statuses": "^1.5.0",
++        "type-is": "^1.6.16",
++        "vary": "^1.1.2"
++      },
++      "dependencies": {
++        "http-errors": {
++          "version": "1.8.1",
++          "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++          "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++          "requires": {
++            "depd": "~1.1.2",
++            "inherits": "2.0.4",
++            "setprototypeof": "1.2.0",
++            "statuses": ">= 1.5.0 < 2",
++            "toidentifier": "1.0.1"
++          },
++          "dependencies": {
++            "depd": {
++              "version": "1.1.2",
++              "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++              "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ=="
++            }
++          }
++        }
++      }
++    },
++    "koa-compose": {
++      "version": "4.1.0",
++      "resolved": "https://registry.npmjs.org/koa-compose/-/koa-compose-4.1.0.tgz",
++      "integrity": "sha512-8ODW8TrDuMYvXRwra/Kh7/rJo9BtOfPc6qO8eAfC80CnCvSjSl0bkRM24X6/XBBEyj0v1nRUQ1LyOy3dbqOWXw=="
++    },
++    "koa-convert": {
++      "version": "2.0.0",
++      "resolved": "https://registry.npmjs.org/koa-convert/-/koa-convert-2.0.0.tgz",
++      "integrity": "sha512-asOvN6bFlSnxewce2e/DK3p4tltyfC4VM7ZwuTuepI7dEQVcvpyFuBcEARu1+Hxg8DIwytce2n7jrZtRlPrARA==",
++      "requires": {
++        "co": "^4.6.0",
++        "koa-compose": "^4.1.0"
++      }
++    },
++    "koa-router": {
++      "version": "7.4.0",
++      "resolved": "https://registry.npmjs.org/koa-router/-/koa-router-7.4.0.tgz",
++      "integrity": "sha512-IWhaDXeAnfDBEpWS6hkGdZ1ablgr6Q6pGdXCyK38RbzuH4LkUOpPqPw+3f8l8aTDrQmBQ7xJc0bs2yV4dzcO+g==",
++      "requires": {
++        "debug": "^3.1.0",
++        "http-errors": "^1.3.1",
++        "koa-compose": "^3.0.0",
++        "methods": "^1.0.1",
++        "path-to-regexp": "^1.1.1",
++        "urijs": "^1.19.0"
++      },
++      "dependencies": {
++        "debug": {
++          "version": "3.2.7",
++          "resolved": "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz",
++          "integrity": "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==",
++          "requires": {
++            "ms": "^2.1.1"
++          }
++        },
++        "depd": {
++          "version": "1.1.2",
++          "resolved": "https://registry.npmjs.org/depd/-/depd-1.1.2.tgz",
++          "integrity": "sha512-7emPTl6Dpo6JRXOXjLRxck+FlLRX5847cLKEn00PLAgc3g2hTZZgr+e4c2v6QpSmLeFP3n5yUo7ft6avBK/5jQ=="
++        },
++        "http-errors": {
++          "version": "1.8.1",
++          "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-1.8.1.tgz",
++          "integrity": "sha512-Kpk9Sm7NmI+RHhnj6OIWDI1d6fIoFAtFt9RLaTMRlg/8w49juAStsrBgp0Dp4OdxdVbRIeKhtCUvoi/RuAhO4g==",
++          "requires": {
++            "depd": "~1.1.2",
++            "inherits": "2.0.4",
++            "setprototypeof": "1.2.0",
++            "statuses": ">= 1.5.0 < 2",
++            "toidentifier": "1.0.1"
++          }
++        },
++        "isarray": {
++          "version": "0.0.1",
++          "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
++          "integrity": "sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ=="
++        },
++        "koa-compose": {
++          "version": "3.2.1",
++          "resolved": "https://registry.npmjs.org/koa-compose/-/koa-compose-3.2.1.tgz",
++          "integrity": "sha512-8gen2cvKHIZ35eDEik5WOo8zbVp9t4cP8p4hW4uE55waxolLRexKKrqfCpwhGVppnB40jWeF8bZeTVg99eZgPw==",
++          "requires": {
++            "any-promise": "^1.1.0"
++          }
++        },
++        "path-to-regexp": {
++          "version": "1.8.0",
++          "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.8.0.tgz",
++          "integrity": "sha512-n43JRhlUKUAlibEJhPeir1ncUID16QnEjNpwzNdO3Lm4ywrBpBZ5oLD0I6br9evr1Y9JTqwRtAh7JLoOzAQdVA==",
++          "requires": {
++            "isarray": "0.0.1"
++          }
++        }
++      }
++    },
+     "less": {
+       "version": "4.1.3",
+       "resolved": "https://registry.npmjs.org/less/-/less-4.1.3.tgz",
+@@ -17352,8 +17935,7 @@
+     "media-typer": {
+       "version": "0.3.0",
+       "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz",
+-      "integrity": "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==",
+-      "dev": true
++      "integrity": "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ=="
+     },
+     "memfs": {
+       "version": "3.4.10",
+@@ -17385,8 +17967,7 @@
+     "methods": {
+       "version": "1.1.2",
+       "resolved": "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz",
+-      "integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==",
+-      "dev": true
++      "integrity": "sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w=="
+     },
+     "micromatch": {
+       "version": "4.0.5",
+@@ -17407,14 +17988,12 @@
+     "mime-db": {
+       "version": "1.52.0",
+       "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz",
+-      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==",
+-      "dev": true
++      "integrity": "sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg=="
+     },
+     "mime-types": {
+       "version": "2.1.35",
+       "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz",
+       "integrity": "sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==",
+-      "dev": true,
+       "requires": {
+         "mime-db": "1.52.0"
+       }
+@@ -17555,8 +18134,7 @@
+     "ms": {
+       "version": "2.1.2",
+       "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.2.tgz",
+-      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",
+-      "dev": true
++      "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w=="
+     },
+     "multicast-dns": {
+       "version": "7.2.5",
+@@ -17617,8 +18195,7 @@
+     "negotiator": {
+       "version": "0.6.3",
+       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz",
+-      "integrity": "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==",
+-      "dev": true
++      "integrity": "sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg=="
+     },
+     "neo-async": {
+       "version": "2.6.2",
+@@ -17635,6 +18212,14 @@
+         "@ant-design/icons-angular": "^14.1.0",
+         "date-fns": "^2.16.1",
+         "tslib": "^2.3.0"
++      }
++    },
++    "ngx-echarts": {
++      "version": "14.0.0",
++      "resolved": "https://registry.npmjs.org/ngx-echarts/-/ngx-echarts-14.0.0.tgz",
++      "integrity": "sha512-Q8J/DXiWqYM2vqTfQq16A7KyxbWECZSiAApS0rBjsAJCPjG/VZogUe0snZ/i3mA6bV3vYm41imTYOaH+Rl97QA==",
++      "requires": {
++        "tslib": "^2.3.0"
+       }
+     },
+     "nice-napi": {
+@@ -17913,7 +18498,6 @@
+       "version": "2.4.1",
+       "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
+       "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+-      "dev": true,
+       "requires": {
+         "ee-first": "1.1.1"
+       }
+@@ -17942,6 +18526,11 @@
+         "mimic-fn": "^2.1.0"
+       }
+     },
++    "only": {
++      "version": "0.0.2",
++      "resolved": "https://registry.npmjs.org/only/-/only-0.0.2.tgz",
++      "integrity": "sha512-Fvw+Jemq5fjjyWz6CpKx6w9s7xxqo3+JCyM0WXWeCSOboZ8ABkyvP8ID4CZuChA/wxSx+XSJmdOm8rGVyJ1hdQ=="
++    },
+     "open": {
+       "version": "8.4.0",
+       "resolved": "https://registry.npmjs.org/open/-/open-8.4.0.tgz",
+@@ -18177,8 +18766,7 @@
+     "parseurl": {
+       "version": "1.3.3",
+       "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
+-      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
+-      "dev": true
++      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ=="
+     },
+     "path-exists": {
+       "version": "4.0.0",
+@@ -19051,8 +19639,7 @@
+     "safe-buffer": {
+       "version": "5.2.1",
+       "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+-      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+-      "dev": true
++      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ=="
+     },
+     "safer-buffer": {
+       "version": "2.1.2",
+@@ -19310,8 +19897,7 @@
+     "setprototypeof": {
+       "version": "1.2.0",
+       "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+-      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
+-      "dev": true
++      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw=="
+     },
+     "shallow-clone": {
+       "version": "3.0.1",
+@@ -19563,8 +20149,7 @@
+     "statuses": {
+       "version": "1.5.0",
+       "resolved": "https://registry.npmjs.org/statuses/-/statuses-1.5.0.tgz",
+-      "integrity": "sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==",
+-      "dev": true
++      "integrity": "sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA=="
+     },
+     "streamroller": {
+       "version": "3.1.3",
+@@ -19866,8 +20451,7 @@
+     "toidentifier": {
+       "version": "1.0.1",
+       "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
+-      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
+-      "dev": true
++      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA=="
+     },
+     "tree-kill": {
+       "version": "1.2.2",
+@@ -19880,6 +20464,11 @@
+       "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.4.1.tgz",
+       "integrity": "sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA=="
+     },
++    "tsscmp": {
++      "version": "1.0.6",
++      "resolved": "https://registry.npmjs.org/tsscmp/-/tsscmp-1.0.6.tgz",
++      "integrity": "sha512-LxhtAkPDTkVCMQjt2h6eBVY28KCjikZqZfMcC15YBeNjkgUpdCfBu5HoiOTDu86v6smE8yOjyEktJ8hlbANHQA=="
++    },
+     "type-fest": {
+       "version": "0.21.3",
+       "resolved": "https://registry.npmjs.org/type-fest/-/type-fest-0.21.3.tgz",
+@@ -19890,7 +20479,6 @@
+       "version": "1.6.18",
+       "resolved": "https://registry.npmjs.org/type-is/-/type-is-1.6.18.tgz",
+       "integrity": "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==",
+-      "dev": true,
+       "requires": {
+         "media-typer": "0.3.0",
+         "mime-types": "~2.1.24"
+@@ -19991,6 +20579,11 @@
+         "punycode": "^2.1.0"
+       }
+     },
++    "urijs": {
++      "version": "1.19.11",
++      "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.19.11.tgz",
++      "integrity": "sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ=="
++    },
+     "util-deprecate": {
+       "version": "1.0.2",
+       "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
+@@ -20031,8 +20624,7 @@
+     "vary": {
+       "version": "1.1.2",
+       "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+-      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
+-      "dev": true
++      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg=="
+     },
+     "void-elements": {
+       "version": "2.0.1",
+@@ -20378,6 +20970,11 @@
+       "integrity": "sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==",
+       "dev": true
+     },
++    "ylru": {
++      "version": "1.3.2",
++      "resolved": "https://registry.npmjs.org/ylru/-/ylru-1.3.2.tgz",
++      "integrity": "sha512-RXRJzMiK6U2ye0BlGGZnmpwJDPgakn6aNQ0A7gHRbD4I0uvK4TW6UqkK1V0pp9jskjJBAXd3dRrbzWkqJ+6cxA=="
++    },
+     "zone.js": {
+       "version": "0.11.8",
+       "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.11.8.tgz",
+@@ -20385,6 +20982,21 @@
+       "requires": {
+         "tslib": "^2.3.0"
+       }
++    },
++    "zrender": {
++      "version": "5.4.0",
++      "resolved": "https://registry.npmjs.org/zrender/-/zrender-5.4.0.tgz",
++      "integrity": "sha512-rOS09Z2HSVGFs2dn/TuYk5BlCaZcVe8UDLLjj1ySYF828LATKKdxuakSZMvrDz54yiKPDYVfjdKqcX8Jky3BIA==",
++      "requires": {
++        "tslib": "2.3.0"
++      },
++      "dependencies": {
++        "tslib": {
++          "version": "2.3.0",
++          "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.3.0.tgz",
++          "integrity": "sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg=="
++        }
++      }
+     }
+   }
+ }
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"3f305bab-f089-4bdb-8c4b-3cab9fd085e5\" name=\"Changes\" comment=\"add frontend\">\n      <change afterPath=\"$PROJECT_DIR$/client/frontend/proxy.conf.json\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/server/.env\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/server/function_area/chat_box.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/angular.json\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/angular.json\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/src/app/app-routing.module.ts\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/src/app/app-routing.module.ts\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/src/app/app.component.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/src/app/app.component.html\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.module.ts\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.module.ts\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/api_service/load_api.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/api_service/load_api.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/app.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/app.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/function_area/transaction.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/function_area/transaction.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/server/text_format/format_text_to_function.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/server/text_format/format_text_to_function.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"FlaskConsoleOptions\" custom-start-script=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\">\n    <envs>\n      <env key=\"FLASK_APP\" value=\"app\" />\n    </envs>\n    <option name=\"myCustomStartScript\" value=\"import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\\nApp: %s [%s]\\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))\" />\n    <option name=\"myEnvs\">\n      <map>\n        <entry key=\"FLASK_APP\" value=\"app\" />\n      </map>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"main\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2H84WAO0GBdp3kUjzSCAztrW5Ss\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/Users/tonysken/PycharmProjects/hackathon2023&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,\n    &quot;ts.external.directory.path&quot;: &quot;/Users/tonysken/PycharmProjects/hackathon2023/client/frontend/node_modules/typescript/lib&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Python.app\">\n    <configuration name=\"Websocket\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/websocket\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/websocket/Websocket.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"app\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/app.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"load_api\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/api_service\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/api_service/load_api.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"load_api_create_account\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"hackathon2023\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/server/transaction\" />\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/server/transaction/load_api_create_account.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Python.app\" />\n        <item itemvalue=\"Python.load_api\" />\n        <item itemvalue=\"Python.Websocket\" />\n        <item itemvalue=\"Python.load_api_create_account\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"3f305bab-f089-4bdb-8c4b-3cab9fd085e5\" name=\"Changes\" comment=\"\" />\n      <created>1667653406063</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1667653406063</updated>\n      <workItem from=\"1667653422421\" duration=\"41000\" />\n      <workItem from=\"1667653635614\" duration=\"2015000\" />\n      <workItem from=\"1667655703891\" duration=\"178000\" />\n      <workItem from=\"1667655907789\" duration=\"39586000\" />\n      <workItem from=\"1667704509572\" duration=\"1692000\" />\n      <workItem from=\"1667706214858\" duration=\"1994000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"add -file\">\n      <created>1667673859491</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667673859491</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"add frontend\">\n      <created>1667674706911</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1667674706915</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"3\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"add -file\" />\n    <MESSAGE value=\"add frontend\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"add frontend\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/hackathon2023$Websocket.coverage\" NAME=\"Websocket Coverage Results\" MODIFIED=\"1667662876149\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/websocket\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$app.coverage\" NAME=\"app Coverage Results\" MODIFIED=\"1667708148418\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$load_api.coverage\" NAME=\"load_api Coverage Results\" MODIFIED=\"1667664384951\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/api_service\" />\n    <SUITE FILE_PATH=\"coverage/hackathon2023$load_api_create_account.coverage\" NAME=\"load_api_create_account Coverage Results\" MODIFIED=\"1667656652461\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/server/transaction\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision a292f27b532bc289ef7fa97e8455cc2ef3445b2c)
++++ b/.idea/workspace.xml	(date 1667730971244)
+@@ -1,21 +1,20 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="3f305bab-f089-4bdb-8c4b-3cab9fd085e5" name="Changes" comment="add frontend">
+-      <change afterPath="$PROJECT_DIR$/client/frontend/proxy.conf.json" afterDir="false" />
++    <list default="true" id="3f305bab-f089-4bdb-8c4b-3cab9fd085e5" name="Changes" comment="add some functions for analyse words">
+       <change afterPath="$PROJECT_DIR$/server/.env" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/server/function_area/chat_box.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/client/frontend/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/angular.json" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/app-routing.module.ts" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/package-lock.json" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/package.json" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/client/frontend/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/app.component.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/app.module.ts" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.scss" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/budget/budget.component.ts" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.html" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.component.ts" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/client/frontend/src/app/pages/welcome/welcome.module.ts" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/server/api/pie_chart.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/api/pie_chart.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/server/api_service/load_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/api_service/load_api.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/server/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/app.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/server/function_area/transaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/function_area/transaction.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/server/text_format/format_text_to_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/text_format/format_text_to_function.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -185,7 +184,7 @@
+       <workItem from="1667655703891" duration="178000" />
+       <workItem from="1667655907789" duration="39586000" />
+       <workItem from="1667704509572" duration="1692000" />
+-      <workItem from="1667706214858" duration="1994000" />
++      <workItem from="1667706214858" duration="11866000" />
+     </task>
+     <task id="LOCAL-00001" summary="add -file">
+       <created>1667673859491</created>
+@@ -201,7 +200,14 @@
+       <option name="project" value="LOCAL" />
+       <updated>1667674706915</updated>
+     </task>
+-    <option name="localTasksCounter" value="3" />
++    <task id="LOCAL-00003" summary="add some functions for analyse words">
++      <created>1667708291647</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1667708291647</updated>
++    </task>
++    <option name="localTasksCounter" value="4" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -221,11 +227,12 @@
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="add -file" />
+     <MESSAGE value="add frontend" />
+-    <option name="LAST_COMMIT_MESSAGE" value="add frontend" />
++    <MESSAGE value="add some functions for analyse words" />
++    <option name="LAST_COMMIT_MESSAGE" value="add some functions for analyse words" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+     <SUITE FILE_PATH="coverage/hackathon2023$Websocket.coverage" NAME="Websocket Coverage Results" MODIFIED="1667662876149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/websocket" />
+-    <SUITE FILE_PATH="coverage/hackathon2023$app.coverage" NAME="app Coverage Results" MODIFIED="1667708148418" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server" />
++    <SUITE FILE_PATH="coverage/hackathon2023$app.coverage" NAME="app Coverage Results" MODIFIED="1667728508427" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server" />
+     <SUITE FILE_PATH="coverage/hackathon2023$load_api.coverage" NAME="load_api Coverage Results" MODIFIED="1667664384951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/api_service" />
+     <SUITE FILE_PATH="coverage/hackathon2023$load_api_create_account.coverage" NAME="load_api_create_account Coverage Results" MODIFIED="1667656652461" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/server/transaction" />
+   </component>
