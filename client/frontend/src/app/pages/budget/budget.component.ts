@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import {HttpClient} from "@angular/common/http";
 import {NzNotificationService} from "ng-zorro-antd/notification";
+import { NzInputModule } from 'ng-zorro-antd/input';
 
 @Component({
   selector: 'app-budget',
@@ -13,6 +14,7 @@ export class BudgetComponent implements OnInit {
 
   option : EChartsOption = {};
   accountID = "73680920";
+  email = "";
   isLoading = true;
   constructor(private http: HttpClient, private notification: NzNotificationService) { }
 
@@ -64,9 +66,12 @@ export class BudgetComponent implements OnInit {
   }
 
   download(): void {
-    this.http.post("/api/ss", {accountID: this.accountID}).subscribe(data => {
+    this.http.post<any>("/api/report/send", {accountID: this.accountID, email: this.email}, {responseType: "blob" as "json"}).subscribe(data => {
           this.createBasicNotification()
-        })
+          const blob = new Blob([data], { type: 'application/pdf' });
+          const url= window.URL.createObjectURL(blob);
+          window.open(url);
+    })
   }
 
 }

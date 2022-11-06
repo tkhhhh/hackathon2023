@@ -73,6 +73,7 @@ def send_report():
     content = request.json
     account_id = content["accountID"]
     email = content["email"]
+    print(email)
     return None #TODO
 
 if __name__ == "__main__":
