@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-welcome',
@@ -23,7 +24,7 @@ export class WelcomeComponent implements OnInit {
   accountDetails: AccountDetails = {firstname: "",lastname: "",homeAddress: "",email:"", phoneNumber:""};
   accountID = "73680920";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     this.http.post<any>('/api/transaction/recently', { accountID: this.accountID, amount: 4, day: 360 }).subscribe(data => {
@@ -44,7 +45,6 @@ export class WelcomeComponent implements OnInit {
         email: data["email"],
         phoneNumber: data["phoneNumber"]
       };
-      console.log(data);
       this.accountDetailsisSpinning = false;
     });
   }
@@ -70,7 +70,7 @@ export class WelcomeComponent implements OnInit {
 
   handleOk(): void {
     this.http.post<any>(this.purpose_url, this.purpose_param).subscribe(data => {
-      if(this.purpose === "report") //navigator
+      if(this.purpose.includes("report")) this.router.navigateByUrl("/budget")
       this.handleCancel()
     })
   }

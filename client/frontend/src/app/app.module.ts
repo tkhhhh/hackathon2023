@@ -13,12 +13,19 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconsProviderModule } from './icons-provider.module';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import {BudgetComponent} from "./pages/budget/budget.component";
+import {NzGridModule} from "ng-zorro-antd/grid";
+import { NgxEchartsModule } from 'ngx-echarts';
+import * as echarts from 'echarts';
+import {NzButtonModule} from "ng-zorro-antd/button";
+import {NzSpinModule} from "ng-zorro-antd/spin";
 
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BudgetComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,8 +35,15 @@ registerLocaleData(en);
     BrowserAnimationsModule,
     IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule
+    NzMenuModule,
+    NzGridModule,
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts'),
+    }),
+    NzButtonModule,
+    NzSpinModule,
   ],
+  exports: [NgxEchartsModule],
   providers: [
     { provide: NZ_I18N, useValue: en_US }
   ],

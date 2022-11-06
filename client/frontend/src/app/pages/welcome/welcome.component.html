@@ -1,9 +1,8 @@
-<div nz-row style="width:95%;">
-  <div nz-col nzSpan="24">
+<div nz-row [nzGutter]="[16, 12]" nzJustify="space-around" nzAlign="middle">
+  <div nz-col nzSpan="22">
     <textarea rows="7" nz-input [disabled]="true" [(ngModel)]="inputValue"></textarea>
   </div>
-  <br/>
-  <div nz-col nzSpan="24">
+  <div nz-col nzSpan="22">
     <nz-input-group nzSearch nzSize="large" [nzAddOnAfter]="suffixButton">
       <input type="text" nz-input placeholder="input search text"  [(ngModel)]="typeValue"/>
     </nz-input-group>
@@ -13,9 +12,10 @@
   </div>
 </div>
 <br/>
-<div nz-row>
+<nz-spin [nzSpinning]="isSpinning || accountDetailsisSpinning">
+  <div nz-row [nzGutter]="[5, 12]" nzJustify="space-around" nzAlign="middle">
   <div nz-col nzSpan="12">
-      <nz-table [nzLoading]="isSpinning" [nzPageSize]="20" [nzScroll]="{ y: '200px' }" style="width:95%;">
+      <nz-table nzTemplateMode #tableComponent [nzData]="recentTransactions" [nzPageSize]="20" [nzScroll]="{ y: '200px' }" style="width:95%;">
       <thead>
         <tr>
           <th>merchant</th>
@@ -24,7 +24,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of recentTransactions">
+        <tr *ngFor="let data of tableComponent.nzData">
           <td>{{ data.merchant }}</td>
           <td>{{ data.amount }}</td>
           <td>{{ data.timestamp }}</td>
@@ -33,17 +33,15 @@
     </nz-table>
   </div>
   <div nz-col nzSpan="12">
-    <nz-card [nzLoading]="accountDetailsisSpinning" style="width:95%;" nzTitle="Personal Detail" [nzExtra]="extraTemplate">
+    <nz-card nzTitle="Personal Detail">
       <p>Name: {{ accountDetails.firstname }} {{ accountDetails.lastname }}</p>
       <p>Address: {{ accountDetails.homeAddress }}</p>
       <p>Email: {{ accountDetails.email }}</p>
       <p>Phone: {{ accountDetails.phoneNumber }}</p>
     </nz-card>
-    <ng-template #extraTemplate>
-      <a>More</a>
-    </ng-template>
   </div>
 </div>
+</nz-spin>
 <nz-modal [(nzVisible)]="isVisible" [nzTitle]="purpose" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
       <ng-container *nzModalContent>
         <p>Content one</p>
