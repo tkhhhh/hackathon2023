@@ -3,8 +3,9 @@ from flask import Flask, request
 from flask.cli import load_dotenv
 from api import accounts, sms
 
-from server.function_area.transaction import Transaction
-from server.text_format.format_text_to_function import TextFormat
+from function_area.transaction import Transaction
+from function_area.account import Account
+from text_format.format_text_to_function import TextFormat
 from flask_sock import Sock
 
 
@@ -25,11 +26,6 @@ def create_account():
     account_data = accounts.create_account(authJWT)
     return f"{account_data}"
 
-@app.route("/test/accounts/<account_id>")
-def get_account(account_id):
-    account_data = accounts.get_account_details(authJWT, account_id)
-    return f"{account_data}"
-
 @app.route("/test/sms/<phone_no>")
 def send_sms(phone_no):
     sms.send_sms(twilio_account_sid, twilio_auth_token, twilio_phone_no, phone_no)
@@ -42,6 +38,14 @@ def get_recent_transactions():
     amount = content["amount"]
     trans = Transaction(account_id, authJWT)
     return json.dumps(trans.get_recent_transaction(day, amount))
+
+@app.route("/api/account/details", methods=["POST"])
+def get_account():
+    content = request.json
+    account_id = content["accountID"]
+    account = Account(account_id, authJWT)
+    account_data = account.get_account_details(authJWT, account_id)
+    return json.dumps(account_data)
 
 @app.route("/api/robot", methods=["POST"])
 def robot():

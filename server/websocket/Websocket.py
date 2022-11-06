@@ -1,6 +1,6 @@
 import asyncio
 import websockets, json
-from server.text_format.format_text_to_function import TextFormat
+from text_format.format_text_to_function import TextFormat
 
 async def handler(websocket):
     while True:

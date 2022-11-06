@@ -24,7 +24,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of listOfData">
+        <tr *ngFor="let data of recentTransactions">
           <td>{{ data.merchant }}</td>
           <td>{{ data.amount }}</td>
           <td>{{ data.timestamp }}</td>
@@ -33,10 +33,11 @@
     </nz-table>
   </div>
   <div nz-col nzSpan="12">
-    <nz-card style="width:95%;" nzTitle="Personal Detail" [nzExtra]="extraTemplate">
-      <p>Card content</p>
-      <p>Card content</p>
-      <p>Card content</p>
+    <nz-card [nzLoading]="accountDetailsisSpinning" style="width:95%;" nzTitle="Personal Detail" [nzExtra]="extraTemplate">
+      <p>Name: {{ accountDetails.firstname }} {{ accountDetails.lastname }}</p>
+      <p>Address: {{ accountDetails.homeAddress }}</p>
+      <p>Email: {{ accountDetails.email }}</p>
+      <p>Phone: {{ accountDetails.phoneNumber }}</p>
     </nz-card>
     <ng-template #extraTemplate>
       <a>More</a>
